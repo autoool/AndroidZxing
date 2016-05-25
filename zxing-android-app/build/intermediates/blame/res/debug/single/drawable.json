@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "E:\\MyGithub\\AndroidZxing\\zxing-android-app\\build\\intermediates\\res\\merged\\debug\\drawable\\share_via_barcode.png",
+        "source": "E:\\MyGithub\\AndroidZxing\\zxing-android-app\\src\\main\\res\\drawable\\share_via_barcode.png"
+    },
+    {
+        "merged": "E:\\PersonalWork\\androidzxing\\app\\build\\intermediates\\res\\merged\\debug\\drawable\\launcher_icon.png",
+        "source": "E:\\PersonalWork\\androidzxing\\app\\src\\main\\res\\drawable\\launcher_icon.png"
+    },
+    {
+        "merged": "E:\\MyGithub\\AndroidZxing\\zxing-android-app\\build\\intermediates\\res\\merged\\debug\\drawable\\launcher_icon.png",
+        "source": "E:\\MyGithub\\AndroidZxing\\zxing-android-app\\src\\main\\res\\drawable\\launcher_icon.png"
+    },
+    {
+        "merged": "E:\\PersonalWork\\androidzxing\\app\\build\\intermediates\\res\\merged\\debug\\drawable\\share_via_barcode.png",
+        "source": "E:\\PersonalWork\\androidzxing\\app\\src\\main\\res\\drawable\\share_via_barcode.png"
+    }
+]

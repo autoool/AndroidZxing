@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "E:\\PersonalWork\\androidzxing\\app\\build\\intermediates\\res\\merged\\debug\\drawable-nodpi-v4\\zx_code_line.png",
+        "source": "E:\\PersonalWork\\androidzxing\\app\\src\\main\\res\\drawable-nodpi\\zx_code_line.png"
+    },
+    {
+        "merged": "E:\\MyGithub\\AndroidZxing\\zxing-android-app\\build\\intermediates\\res\\merged\\debug\\drawable-nodpi-v4\\zx_code_line.png",
+        "source": "E:\\MyGithub\\AndroidZxing\\zxing-android-app\\src\\main\\res\\drawable-nodpi\\zx_code_line.png"
+    }
+]

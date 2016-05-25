@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "E:\\MyGithub\\AndroidZxing\\zxing-android-app\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi-v4\\launcher_icon.png",
+        "source": "E:\\MyGithub\\AndroidZxing\\zxing-android-app\\src\\main\\res\\drawable-xhdpi\\launcher_icon.png"
+    },
+    {
+        "merged": "E:\\PersonalWork\\androidzxing\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi-v4\\launcher_icon.png",
+        "source": "E:\\PersonalWork\\androidzxing\\app\\src\\main\\res\\drawable-xhdpi\\launcher_icon.png"
+    }
+]

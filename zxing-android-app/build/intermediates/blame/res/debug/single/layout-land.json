@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "E:\\MyGithub\\AndroidZxing\\zxing-android-app\\build\\intermediates\\res\\merged\\debug\\layout-land\\share.xml",
+        "source": "E:\\MyGithub\\AndroidZxing\\zxing-android-app\\src\\main\\res\\layout-land\\share.xml"
+    },
+    {
+        "merged": "E:\\PersonalWork\\androidzxing\\app\\build\\intermediates\\res\\merged\\debug\\layout-land\\encode.xml",
+        "source": "E:\\PersonalWork\\androidzxing\\app\\src\\main\\res\\layout-land\\encode.xml"
+    },
+    {
+        "merged": "E:\\MyGithub\\AndroidZxing\\zxing-android-app\\build\\intermediates\\res\\merged\\debug\\layout-land\\encode.xml",
+        "source": "E:\\MyGithub\\AndroidZxing\\zxing-android-app\\src\\main\\res\\layout-land\\encode.xml"
+    },
+    {
+        "merged": "E:\\PersonalWork\\androidzxing\\app\\build\\intermediates\\res\\merged\\debug\\layout-land\\share.xml",
+        "source": "E:\\PersonalWork\\androidzxing\\app\\src\\main\\res\\layout-land\\share.xml"
+    }
+]
