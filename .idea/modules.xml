@@ -3,9 +3,11 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AndroidZxing.iml" filepath="$PROJECT_DIR$/AndroidZxing.iml" />
+      <module fileurl="file://$PROJECT_DIR$/android/android.iml" filepath="$PROJECT_DIR$/android/android.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/xZbar/xZbar.iml" filepath="$PROJECT_DIR$/xZbar/xZbar.iml" />
+      <module fileurl="file://$PROJECT_DIR$/xzbarapp/xzbarapp.iml" filepath="$PROJECT_DIR$/xzbarapp/xzbarapp.iml" />
       <module fileurl="file://$PROJECT_DIR$/zxing-android/zxing-android.iml" filepath="$PROJECT_DIR$/zxing-android/zxing-android.iml" />
-      <module fileurl="file://$PROJECT_DIR$/zxing-android-app/zxing-android-app.iml" filepath="$PROJECT_DIR$/zxing-android-app/zxing-android-app.iml" />
     </modules>
   </component>
 </project>

@@ -60,7 +60,7 @@
         <uses-library android:name="android.test.runner" />
 
         <activity
-            android:name="com.google.zxing.client.android.CaptureActivity"
+            android:name="com.google.zxing.client.android.library.CaptureActivity"
             android:clearTaskOnLaunch="true"
             android:screenOrientation="sensorPortrait"
             android:stateNotNeeded="true"

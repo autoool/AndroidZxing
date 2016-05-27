@@ -28,17 +28,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-final class DecodeFormatManager {
+public class DecodeFormatManager {
 
   private static final Pattern COMMA_PATTERN = Pattern.compile(",");
 
-  static final Set<BarcodeFormat> PRODUCT_FORMATS;
-  static final Set<BarcodeFormat> INDUSTRIAL_FORMATS;
-  private static final Set<BarcodeFormat> ONE_D_FORMATS;
-  static final Set<BarcodeFormat> QR_CODE_FORMATS = EnumSet.of(BarcodeFormat.QR_CODE);
-  static final Set<BarcodeFormat> DATA_MATRIX_FORMATS = EnumSet.of(BarcodeFormat.DATA_MATRIX);
-  static final Set<BarcodeFormat> AZTEC_FORMATS = EnumSet.of(BarcodeFormat.AZTEC);
-  static final Set<BarcodeFormat> PDF417_FORMATS = EnumSet.of(BarcodeFormat.PDF_417);
+  public static final Set<BarcodeFormat> PRODUCT_FORMATS;
+  public static final Set<BarcodeFormat> INDUSTRIAL_FORMATS;
+  public static final Set<BarcodeFormat> ONE_D_FORMATS;
+  public static final Set<BarcodeFormat> QR_CODE_FORMATS = EnumSet.of(BarcodeFormat.QR_CODE);
+  public static final Set<BarcodeFormat> DATA_MATRIX_FORMATS = EnumSet.of(BarcodeFormat.DATA_MATRIX);
+  public static final Set<BarcodeFormat> AZTEC_FORMATS = EnumSet.of(BarcodeFormat.AZTEC);
+  public static final Set<BarcodeFormat> PDF417_FORMATS = EnumSet.of(BarcodeFormat.PDF_417);
   static {
     PRODUCT_FORMATS = EnumSet.of(BarcodeFormat.UPC_A,
                                  BarcodeFormat.UPC_E,
@@ -65,7 +65,7 @@ final class DecodeFormatManager {
     FORMATS_FOR_MODE.put(Intents.Scan.PDF417_MODE, PDF417_FORMATS);
   }
 
-  private DecodeFormatManager() {}
+  public DecodeFormatManager() {}
 
   static Set<BarcodeFormat> parseDecodeFormats(Intent intent) {
     Iterable<String> scanFormats = null;
@@ -76,7 +76,7 @@ final class DecodeFormatManager {
     return parseDecodeFormats(scanFormats, intent.getStringExtra(Intents.Scan.MODE));
   }
 
-  static Set<BarcodeFormat> parseDecodeFormats(Uri inputUri) {
+  public static Set<BarcodeFormat> parseDecodeFormats(Uri inputUri) {
     List<String> formats = inputUri.getQueryParameters(Intents.Scan.FORMATS);
     if (formats != null && formats.size() == 1 && formats.get(0) != null){
       formats = Arrays.asList(COMMA_PATTERN.split(formats.get(0)));
@@ -84,7 +84,7 @@ final class DecodeFormatManager {
     return parseDecodeFormats(formats, inputUri.getQueryParameter(Intents.Scan.MODE));
   }
 
-  private static Set<BarcodeFormat> parseDecodeFormats(Iterable<String> scanFormats, String decodeMode) {
+  public static Set<BarcodeFormat> parseDecodeFormats(Iterable<String> scanFormats, String decodeMode) {
     if (scanFormats != null) {
       Set<BarcodeFormat> formats = EnumSet.noneOf(BarcodeFormat.class);
       try {

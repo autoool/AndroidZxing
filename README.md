@@ -1,5 +1,13 @@
 ## zxing 扫码
 
+
+
+## zxbar
+
+- zbar 打包编译[http://www.blackdogfoundry.com/blog/zbar-bar-code-qr-code-reader-android/]
+- zbar 和 zxing 集成*[（Zbar 解码、ZXing 管理相机）](http://blog.csdn.net/b2259909/article/details/43273231)*[http://blog.csdn.net/b2259909/article/details/43273231#reply]
+- ​待做的是把扫码提取成fragment 或者更方便回调的方式
+
 ### zxing-android-app
 
 - 参考网址[http://stackoverflow.com/questions/8708705/how-to-use-zxing-in-android]

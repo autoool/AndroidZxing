@@ -31,14 +31,14 @@ import com.google.zxing.DecodeHintType;
 /**
  * @author Lachezar Dobrev
  */
-final class DecodeHintManager {
+public class DecodeHintManager {
   
   private static final String TAG = DecodeHintManager.class.getSimpleName();
 
   // This pattern is used in decoding integer arrays.
   private static final Pattern COMMA = Pattern.compile(",");
 
-  private DecodeHintManager() {}
+  public DecodeHintManager() {}
 
   /**
    * <p>Split a query string into a list of name-value pairs.</p>
@@ -54,7 +54,7 @@ final class DecodeHintManager {
    * @param query query to split
    * @return name-value pairs
    */
-  private static Map<String,String> splitQuery(String query) {
+  public static Map<String,String> splitQuery(String query) {
     Map<String,String> map = new HashMap<>();
     int pos = 0;
     while (pos < query.length()) {
@@ -114,7 +114,7 @@ final class DecodeHintManager {
     return map;
   }
 
-  static Map<DecodeHintType,?> parseDecodeHints(Uri inputUri) {
+  public static Map<DecodeHintType,?> parseDecodeHints(Uri inputUri) {
     String query = inputUri.getEncodedQuery();
     if (query == null || query.isEmpty()) {
       return null;
@@ -198,7 +198,7 @@ final class DecodeHintManager {
     return hints;
   }
 
-  static Map<DecodeHintType, Object> parseDecodeHints(Intent intent) {
+  public static Map<DecodeHintType, Object> parseDecodeHints(Intent intent) {
     Bundle extras = intent.getExtras();
     if (extras == null || extras.isEmpty()) {
       return null;

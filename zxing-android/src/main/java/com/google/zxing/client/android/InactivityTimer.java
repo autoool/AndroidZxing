@@ -28,7 +28,7 @@ import android.util.Log;
 /**
  * Finishes an activity after a period of inactivity if the device is on battery power.
  */
-final class InactivityTimer {
+public class InactivityTimer {
 
   private static final String TAG = InactivityTimer.class.getSimpleName();
 
@@ -39,14 +39,14 @@ final class InactivityTimer {
   private boolean registered;
   private AsyncTask<Object,Object,Object> inactivityTask;
 
-  InactivityTimer(Activity activity) {
+  public InactivityTimer(Activity activity) {
     this.activity = activity;
     powerStatusReceiver = new PowerStatusReceiver();
     registered = false;
     onActivity();
   }
 
-  synchronized void onActivity() {
+  public synchronized void onActivity() {
     cancel();
     inactivityTask = new InactivityAsyncTask();
     inactivityTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -80,11 +80,11 @@ final class InactivityTimer {
     }
   }
 
-  void shutdown() {
+  public void shutdown() {
     cancel();
   }
 
-  private final class PowerStatusReceiver extends BroadcastReceiver {
+  public final class PowerStatusReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent){
       if (Intent.ACTION_BATTERY_CHANGED.equals(intent.getAction())) {
@@ -99,7 +99,7 @@ final class InactivityTimer {
     }
   }
 
-  private final class InactivityAsyncTask extends AsyncTask<Object,Object,Object> {
+  public final class InactivityAsyncTask extends AsyncTask<Object,Object,Object> {
     @Override
     protected Object doInBackground(Object... objects) {
       try {
