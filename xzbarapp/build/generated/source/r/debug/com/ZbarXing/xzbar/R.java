@@ -17,13 +17,26 @@ public final class R {
         public static final int shadow=0x7f020003;
     }
     public static final class id {
-        public static final int result_button=0x7f070002;
-        public static final int result_button2=0x7f070003;
-        public static final int result_image=0x7f070000;
-        public static final int result_text=0x7f070001;
+        public static final int button_flashswitch=0x7f07000b;
+        public static final int button_scan=0x7f070005;
+        public static final int capture_crop_view=0x7f070008;
+        public static final int content_capture_mask_bottom=0x7f07000c;
+        public static final int content_capture_mask_top=0x7f07000a;
+        public static final int fragment_scan=0x7f070000;
+        public static final int imageview_left=0x7f07000d;
+        public static final int imageview_right=0x7f07000e;
+        public static final int result_button=0x7f070003;
+        public static final int result_button2=0x7f070004;
+        public static final int result_image=0x7f070001;
+        public static final int result_text=0x7f070002;
+        public static final int scan_container=0x7f070006;
+        public static final int scan_line=0x7f070009;
+        public static final int surfaceview=0x7f070007;
     }
     public static final class layout {
-        public static final int activity_result=0x7f030000;
+        public static final int activity_fragment=0x7f030000;
+        public static final int activity_result=0x7f030001;
+        public static final int fragment_scanbar=0x7f030002;
     }
     public static final class raw {
         public static final int beep=0x7f040000;

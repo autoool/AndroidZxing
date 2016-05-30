@@ -41,6 +41,7 @@
         </activity>
         <activity android:name="com.ZbarZxing.XZbar.ZbarActivity" >
         </activity>
+        <activity android:name="com.testForBarcode.activity.TestScanActivity" />
     </application>
 
 </manifest>

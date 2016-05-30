@@ -83,6 +83,8 @@ public final class ZbarActivity extends Activity implements SurfaceHolder.Callba
 	private ImageView scanLine;
 	private Button scanCancel ;
 	private Button flashswitch;
+
+
 	private boolean isTrue = false;
 
 	private Rect mCropRect = null;
