@@ -1,10 +1,8 @@
 package com.ZbarZxing.XZbar;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.hardware.Camera;
@@ -27,7 +25,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.ZbarXing.xzbar.R;
-import com.google.zxing.Result;
 
 import java.io.IOException;
 import java.util.List;
@@ -90,7 +87,7 @@ public class ScanBarFragment extends Fragment implements SurfaceHolder.Callback 
         scanContainer = (RelativeLayout) view.findViewById(R.id.scan_container);
         scanCropView = (RelativeLayout) view.findViewById(R.id.capture_crop_view);
         scanLine = (ImageView) view.findViewById(R.id.scan_line);
-        flashswitch = (Button) view.findViewById(R.id.button_flashswitch);
+//        flashswitch = (Button) view.findViewById(R.id.button_flashswitch);
         initData();
         initView();
         return view;
@@ -100,8 +97,11 @@ public class ScanBarFragment extends Fragment implements SurfaceHolder.Callback 
         inactivityTimer = new InactivityTimer(getActivity());
         beepManager = new BeepManager(getActivity());
 
-        TranslateAnimation animation = new TranslateAnimation(Animation.RELATIVE_TO_PARENT, 0.0f, Animation.RELATIVE_TO_PARENT, 0.0f, Animation.RELATIVE_TO_PARENT, 0.05f, Animation.RELATIVE_TO_PARENT,
-                0.85f);
+        TranslateAnimation animation = new
+                TranslateAnimation(Animation.RELATIVE_TO_PARENT, 0.0f,
+                Animation.RELATIVE_TO_PARENT, 0.0f,
+                Animation.RELATIVE_TO_PARENT, 0.05f,
+                Animation.RELATIVE_TO_PARENT, 0.85f);
         animation.setDuration(4500);
         animation.setRepeatCount(-1);
         animation.setRepeatMode(Animation.REVERSE);
@@ -122,16 +122,20 @@ public class ScanBarFragment extends Fragment implements SurfaceHolder.Callback 
         PreviewHeight = dm.heightPixels;
 
         //根据屏幕指定扫描框的大小
-        int x = PreviewWidth / 2;
-        int y = PreviewHeight / 2 * 2 / 3;
+        int x = PreviewWidth * 2 / 3;
+        int y = PreviewHeight * 2 / 3;
 
         if (PreviewWidth > PreviewHeight) {
             //根据屏幕指定扫描框的大小
-            x = PreviewHeight / 2;
-            y = PreviewWidth / 2 * 2 / 3;
+            x = PreviewWidth * 2 / 3;
+            y = PreviewHeight * 2 / 3;
         }
         RelativeLayout.LayoutParams relativepaLayoutParams = new RelativeLayout.LayoutParams(
                 x, y);
+        relativepaLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL,
+                RelativeLayout.TRUE);
+        relativepaLayoutParams.addRule(RelativeLayout.CENTER_VERTICAL,
+                RelativeLayout.TRUE);
         scanCropView.setLayoutParams(relativepaLayoutParams);
     }
 
@@ -207,7 +211,6 @@ public class ScanBarFragment extends Fragment implements SurfaceHolder.Callback 
             throw new IllegalStateException("No SurfaceHolder provided");
         }
         if (cameraManager.isOpen()) {
-
             return;
         }
         try {
@@ -299,6 +302,7 @@ public class ScanBarFragment extends Fragment implements SurfaceHolder.Callback 
         beepManager.playBeepSoundAndVibrate();
         if (mCallBack != null)
             mCallBack.result(rawResult);
+        restartPreviewAfterDelay(2000);
     }
 
     public void restartPreviewAfterDelay(long delayMS) {

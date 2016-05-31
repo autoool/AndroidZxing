@@ -16,7 +16,6 @@
 
 package com.google.zxing.client.android.result;
 
-import com.google.zxing.client.android.R;
 import com.google.zxing.client.result.AddressBookParsedResult;
 import com.google.zxing.client.result.ParsedResult;
 
@@ -38,9 +37,9 @@ import java.util.Locale;
  *
  * @author dswitkin@google.com (Daniel Switkin)
  */
-public final class AddressBookResultHandler extends ResultHandler {
+public final class AddressBookResultHandler  {
 
-  private static final DateFormat[] DATE_FORMATS = {
+  /*private static final DateFormat[] DATE_FORMATS = {
     new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH),
     new SimpleDateFormat("yyyyMMdd'T'HHmmss", Locale.ENGLISH),
     new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH),
@@ -216,5 +215,5 @@ public final class AddressBookResultHandler extends ResultHandler {
   @Override
   public int getDisplayTitle() {
     return R.string.result_address_book;
-  }
+  }*/
 }

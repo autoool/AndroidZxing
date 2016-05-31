@@ -46,11 +46,11 @@ import java.util.Map;
  *
  * @author dswitkin@google.com (Daniel Switkin)
  */
-public final class CaptureActivityHandler extends Handler {
+public final class CaptureFragmentHandler extends Handler {
 
-    private static final String TAG = CaptureActivityHandler.class.getSimpleName();
+    private static final String TAG = CaptureFragmentHandler.class.getSimpleName();
 
-    private final CaptureActivity activity;
+    private final CaptureFragment mFragment;
     private final DecodeThread decodeThread;
     private State state;
     private final CameraManager cameraManager;
@@ -61,14 +61,14 @@ public final class CaptureActivityHandler extends Handler {
         DONE
     }
 
-    CaptureActivityHandler(CaptureActivity activity,
+    CaptureFragmentHandler(CaptureFragment fragment,
                            Collection<BarcodeFormat> decodeFormats,
                            Map<DecodeHintType, ?> baseHints,
                            String characterSet,
                            CameraManager cameraManager) {
-        this.activity = activity;
-        decodeThread = new DecodeThread(activity, decodeFormats, baseHints, characterSet,
-                new ViewfinderResultPointCallback(activity.getViewfinderView()));
+        this.mFragment = fragment;
+        decodeThread = new DecodeThread(mFragment, decodeFormats, baseHints, characterSet,
+                new ViewfinderResultPointCallback(mFragment.getViewfinderView()));
         decodeThread.start();
         state = State.SUCCESS;
 
@@ -96,13 +96,13 @@ public final class CaptureActivityHandler extends Handler {
                 }
                 scaleFactor = bundle.getFloat(DecodeThread.BARCODE_SCALED_FACTOR);
             }
-            activity.handleDecode((Result) message.obj, barcode, scaleFactor);
+            mFragment.handleDecode((Result) message.obj, barcode, scaleFactor);
         } else if (message.what == R.id.decode_failed) {
             state = State.PREVIEW;
             cameraManager.requestPreviewFrame(decodeThread.getHandler(), R.id.decode);
         } else if (message.what == R.id.return_scan_result) {
-            activity.setResult(Activity.RESULT_OK, (Intent) message.obj);
-            activity.finish();
+     /*       mFragment.setResult(Activity.RESULT_OK, (Intent) message.obj);
+            mFragment.finish();*/
         } else if (message.what == R.id.launch_product_query) {
             String url = (String) message.obj;
 
@@ -111,7 +111,7 @@ public final class CaptureActivityHandler extends Handler {
             intent.setData(Uri.parse(url));
 
             ResolveInfo resolveInfo =
-                    activity.getPackageManager().resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
+                    mFragment.getActivity().getPackageManager().resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
             String browserPackageName = null;
             if (resolveInfo != null && resolveInfo.activityInfo != null) {
                 browserPackageName = resolveInfo.activityInfo.packageName;
@@ -125,11 +125,11 @@ public final class CaptureActivityHandler extends Handler {
                 intent.putExtra(Browser.EXTRA_APPLICATION_ID, browserPackageName);
             }
 
-            try {
+          /*  try {
                 activity.startActivity(intent);
             } catch (ActivityNotFoundException ignored) {
                 Log.w(TAG, "Can't find anything to handle VIEW of URI " + url);
-            }
+            }*/
         }
     }
 
@@ -154,7 +154,7 @@ public final class CaptureActivityHandler extends Handler {
         if (state == State.SUCCESS) {
             state = State.PREVIEW;
             cameraManager.requestPreviewFrame(decodeThread.getHandler(), R.id.decode);
-            activity.drawViewfinder();
+            mFragment.drawViewfinder();
         }
     }
 

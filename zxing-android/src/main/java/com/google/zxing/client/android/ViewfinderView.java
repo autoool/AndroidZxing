@@ -26,8 +26,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -47,13 +45,6 @@ public final class ViewfinderView extends View {
     private static final int CURRENT_POINT_OPACITY = 0xA0;
     private static final int MAX_RESULT_POINTS = 20;
     private static final int POINT_SIZE = 6;
-
-    // TODO: 2016/5/25 start
-    private int i = 0;
-    private Rect mRect;
-    private GradientDrawable mDrawable;
-    private Drawable lineDrawable;
-    // TODO: 2016/5/25 end
 
     private CameraManager cameraManager;
     private final Paint paint;
@@ -80,14 +71,6 @@ public final class ViewfinderView extends View {
         scannerAlpha = 0;
         possibleResultPoints = new ArrayList<>(5);
         lastPossibleResultPoints = null;
-
-        mRect = new Rect();
-        int left = getResources().getColor(R.color.viewfinder_green);
-        int center = getResources().getColor(R.color.viewfinder_green);
-        int right = getResources().getColor(R.color.viewfinder_green);
-        lineDrawable = getResources().getDrawable(R.drawable.zx_code_line);
-        mDrawable = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT,
-                new int[]{left, left, center, right, right});
     }
 
     public void setCameraManager(CameraManager cameraManager) {
@@ -121,41 +104,12 @@ public final class ViewfinderView extends View {
             canvas.drawBitmap(resultBitmap, null, frame, paint);
         } else {
 
-            // TODO: 2016/5/25 start  画出四个角
-            paint.setColor(getResources().getColor(R.color.viewfinder_green));
-            //左上角
-            canvas.drawRect(frame.left, frame.top, frame.left + 15, frame.top + 5, paint);
-            canvas.drawRect(frame.left, frame.top, frame.left + 5, frame.top + 15, paint);
-            //右上角
-            canvas.drawRect(frame.right - 15, frame.top, frame.right, frame.top + 5, paint);
-            canvas.drawRect(frame.right - 5, frame.top, frame.right, frame.top + 15, paint);
-            //左下角
-            canvas.drawRect(frame.left, frame.bottom - 5, frame.left + 15, frame.bottom, paint);
-            canvas.drawRect(frame.left, frame.bottom - 15, frame.left + 5, frame.bottom, paint);
-            //右下角
-            canvas.drawRect(frame.right - 15, frame.bottom - 5, frame.right, frame.bottom, paint);
-            canvas.drawRect(frame.right - 5, frame.bottom - 15, frame.right, frame.bottom, paint);
-            // TODO: 2016/5/25 end
-
             // Draw a red "laser scanner" line through the middle to show decoding is active
-
-            paint.setColor(getResources().getColor(R.color.viewfinder_green));
+            paint.setColor(laserColor);
             paint.setAlpha(SCANNER_ALPHA[scannerAlpha]);
             scannerAlpha = (scannerAlpha + 1) % SCANNER_ALPHA.length;
-            //固定在中部的线条
-//            int middle = frame.height() / 2 + frame.top;
-//            canvas.drawRect(frame.left + 2, middle - 1, frame.right - 1, middle + 2, paint);
-            if ((i += 2) < frame.bottom - frame.top) {
-                mRect.set(frame.left - 6, frame.top + i - 6, frame.right + 6,
-                        frame.top + 6 + i);
-                lineDrawable.setBounds(mRect);
-                lineDrawable.draw(canvas);
-                invalidate();
-            } else {
-                i = 0;
-            }
-            postInvalidateDelayed(ANIMATION_DELAY, frame.left,
-                    frame.top, frame.right, frame.bottom);
+            int middle = frame.height() / 2 + frame.top;
+            canvas.drawRect(frame.left + 2, middle - 1, frame.right - 1, middle + 2, paint);
 
             float scaleX = frame.width() / (float) previewFrame.width();
             float scaleY = frame.height() / (float) previewFrame.height();

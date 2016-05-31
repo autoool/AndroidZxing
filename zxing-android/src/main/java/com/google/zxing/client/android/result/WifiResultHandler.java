@@ -23,8 +23,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.google.zxing.client.android.library.CaptureActivity;
-import com.google.zxing.client.android.R;
 import com.google.zxing.client.android.wifi.WifiConfigManager;
 import com.google.zxing.client.result.ParsedResult;
 import com.google.zxing.client.result.WifiParsedResult;
@@ -35,11 +33,11 @@ import com.google.zxing.client.result.WifiParsedResult;
  * @author Vikram Aggarwal
  * @author Sean Owen
  */
-public final class WifiResultHandler extends ResultHandler {
+public final class WifiResultHandler  {
 
   private static final String TAG = WifiResultHandler.class.getSimpleName();
 
-  private final CaptureActivity parent;
+ /* private final CaptureActivity parent;
 
   public WifiResultHandler(CaptureActivity activity, ParsedResult result) {
     super(activity, result);
@@ -88,5 +86,5 @@ public final class WifiResultHandler extends ResultHandler {
   @Override
   public int getDisplayTitle() {
     return R.string.result_wifi;
-  }
+  }*/
 }

@@ -715,6 +715,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     if (surfaceHolder == null) {
       throw new IllegalStateException("No SurfaceHolder provided");
     }
+    cameraManager.setManualCameraId(1);
     if (cameraManager.isOpen()) {
       Log.w(TAG, "initCamera() while already open -- late SurfaceView callback?");
       return;

@@ -21,7 +21,6 @@ import com.google.zxing.client.android.Contents;
 import com.google.zxing.client.android.Intents;
 import com.google.zxing.client.android.LocaleManager;
 import com.google.zxing.client.android.PreferencesActivity;
-import com.google.zxing.client.android.R;
 import com.google.zxing.client.android.book.SearchBookContentsActivity;
 import com.google.zxing.client.result.ParsedResult;
 import com.google.zxing.client.result.ParsedResultType;
@@ -362,7 +361,7 @@ public abstract class ResultHandler {
   }
 
   final void sendMMSFromUri(String uri, String subject, String body) {
-    Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse(uri));
+   /* Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse(uri));
     // The Messaging app needs to see a valid subject or else it will treat this an an SMS.
     if (subject == null || subject.isEmpty()) {
       putExtra(intent, "subject", activity.getString(R.string.msg_default_mms_subject));
@@ -371,7 +370,7 @@ public abstract class ResultHandler {
     }
     putExtra(intent, "sms_body", body);
     intent.putExtra("compose_mode", true);
-    launchIntent(intent);
+    launchIntent(intent);*/
   }
 
   final void dialPhone(String phoneNumber) {
@@ -460,7 +459,7 @@ public abstract class ResultHandler {
    * Like {@link #rawLaunchIntent(Intent)} but will show a user dialog if nothing is available to handle.
    */
   final void launchIntent(Intent intent) {
-    try {
+   /* try {
       rawLaunchIntent(intent);
     } catch (ActivityNotFoundException ignored) {
       AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -468,7 +467,7 @@ public abstract class ResultHandler {
       builder.setMessage(R.string.msg_intent_failed);
       builder.setPositiveButton(R.string.button_ok, null);
       builder.show();
-    }
+    }*/
   }
 
   private static void putExtra(Intent intent, String key, String value) {

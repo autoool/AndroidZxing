@@ -18,7 +18,6 @@ package com.google.zxing.client.android.result;
 
 import android.content.ActivityNotFoundException;
 import android.util.Log;
-import com.google.zxing.client.android.R;
 import com.google.zxing.client.result.CalendarParsedResult;
 import com.google.zxing.client.result.ParsedResult;
 
@@ -34,9 +33,9 @@ import java.util.Date;
  * @author dswitkin@google.com (Daniel Switkin)
  * @author Sean Owen
  */
-public final class CalendarResultHandler extends ResultHandler {
+public final class CalendarResultHandler {
 
-  private static final String TAG = CalendarResultHandler.class.getSimpleName();
+ /* private static final String TAG = CalendarResultHandler.class.getSimpleName();
 
   private static final int[] buttons = {
       R.string.button_add_calendar
@@ -81,7 +80,7 @@ public final class CalendarResultHandler extends ResultHandler {
     }
   }
 
-  /**
+  *//**
    * Sends an intent to create a new calendar event by prepopulating the Add Event UI. Older
    * versions of the system have a bug where the event title will not be filled out.
    *
@@ -92,7 +91,7 @@ public final class CalendarResultHandler extends ResultHandler {
    * @param location a text description of the event location
    * @param description a text description of the event itself
    * @param attendees attendees to invite
-   */
+   *//*
   private void addCalendarEvent(String summary,
                                 Date start,
                                 boolean allDay,
@@ -182,5 +181,5 @@ public final class CalendarResultHandler extends ResultHandler {
   @Override
   public int getDisplayTitle() {
     return R.string.result_calendar;
-  }
+  }*/
 }

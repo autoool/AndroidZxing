@@ -28,7 +28,7 @@ import android.view.SurfaceHolder;
 import com.google.zxing.PlanarYUVLuminanceSource;
 import com.google.zxing.client.android.camera.open.OpenCamera;
 import com.google.zxing.client.android.camera.open.OpenCameraInterface;
-import com.google.zxing.client.android.library.CaptureActivity;
+import com.google.zxing.client.android.library.CaptureFragment;
 
 import java.io.IOException;
 
@@ -169,7 +169,7 @@ public final class CameraManager {
     }
 
     /**
-     * Convenience method for {@link CaptureActivity}
+     * Convenience method for {@link CaptureFragment}
      *
      * @param newSetting if {@code true}, light should be turned on if currently off. And vice versa.
      */

@@ -23,29 +23,17 @@ import com.google.zxing.ResultMetadataType;
 import com.google.zxing.ResultPoint;
 import com.google.zxing.client.android.AmbientLightManager;
 import com.google.zxing.client.android.BeepManager;
-import com.google.zxing.client.android.DecodeFormatManager;
-import com.google.zxing.client.android.DecodeHintManager;
 import com.google.zxing.client.android.FinishListener;
-import com.google.zxing.client.android.HelpActivity;
 import com.google.zxing.client.android.InactivityTimer;
-import com.google.zxing.client.android.IntentSource;
 import com.google.zxing.client.android.Intents;
 import com.google.zxing.client.android.PreferencesActivity;
 import com.google.zxing.client.android.R;
 import com.google.zxing.client.android.ScanFromWebPageManager;
 import com.google.zxing.client.android.ViewfinderView;
 import com.google.zxing.client.android.camera.CameraManager;
-import com.google.zxing.client.android.clipboard.ClipboardInterface;
-import com.google.zxing.client.android.history.HistoryActivity;
-import com.google.zxing.client.android.history.HistoryItem;
-import com.google.zxing.client.android.history.HistoryManager;
-import com.google.zxing.client.android.result.ResultButtonListener;
 import com.google.zxing.client.android.result.ResultHandler;
 import com.google.zxing.client.android.result.ResultHandlerFactory;
-import com.google.zxing.client.android.result.supplement.SupplementalInfoRetriever;
-import com.google.zxing.client.android.share.ShareActivity;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -55,21 +43,20 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -91,9 +78,19 @@ import java.util.Map;
  * @author dswitkin@google.com (Daniel Switkin)
  * @author Sean Owen
  */
-public final class CaptureActivity extends Activity implements SurfaceHolder.Callback {
+public class CaptureFragment extends Fragment implements SurfaceHolder.Callback {
 
-    private static final String TAG = CaptureActivity.class.getSimpleName();
+    private static final String TAG = CaptureFragment.class.getSimpleName();
+
+    public interface IResultCallback {
+        void result(Result lastResult);
+    }
+
+    private IResultCallback mCallBack;
+
+    public void setCallBack(IResultCallback iResultCallback) {
+        this.mCallBack = iResultCallback;
+    }
 
     private static final long DEFAULT_INTENT_RESULT_DURATION_MS = 1500L;
     private static final long BULK_MODE_SCAN_DELAY_MS = 1000L;
@@ -109,15 +106,26 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                     ResultMetadataType.POSSIBLE_COUNTRY);
 
     private CameraManager cameraManager;
-    private CaptureActivityHandler handler;
+    private CaptureFragmentHandler handler;
     private Result savedResultToShow;
+
     private ViewfinderView viewfinderView;
+    private SurfaceView surfaceView;
+    private TextView formatTextView;
+    private TextView timeTextView;
+    private TextView metaTextView;
+    private View metaTextViewLabel;
+    private TextView typeTextView;
+    private ImageView barcodeImageView;
+    private TextView supplementTextView;
+    private TextView contentsTextView;
+
     private Result lastResult;
     private boolean hasSurface;
     private String sourceUrl;
     private ScanFromWebPageManager scanFromWebPageManager;
     private Collection<BarcodeFormat> decodeFormats;
-    private Map<DecodeHintType,?> decodeHints;
+    private Map<DecodeHintType, ?> decodeHints;
     private String characterSet;
     private InactivityTimer inactivityTimer;
     private BeepManager beepManager;
@@ -135,62 +143,35 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         return cameraManager;
     }
 
+    @Nullable
     @Override
-    public void onCreate(Bundle icicle) {
-        super.onCreate(icicle);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.capture, container, false);
+        viewfinderView = (ViewfinderView) view.findViewById(R.id.viewfinder_view);
+        surfaceView = (SurfaceView) view.findViewById(R.id.preview_view);
+        formatTextView = (TextView) view.findViewById(R.id.format_text_view);
+        timeTextView = (TextView) view.findViewById(R.id.time_text_view);
+        metaTextView = (TextView) view.findViewById(R.id.meta_text_view);
+        metaTextViewLabel = view.findViewById(R.id.meta_text_view_label);
+        typeTextView = (TextView) view.findViewById(R.id.type_text_view);
+        barcodeImageView = (ImageView) view.findViewById(R.id.barcode_image_view);
+        supplementTextView = (TextView) view.findViewById(R.id.contents_supplement_text_view);
+        contentsTextView = (TextView) view.findViewById(R.id.contents_text_view);
+        initialize();
+        return view;
+    }
 
-        Window window = getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        setContentView(R.layout.capture);
-
+    private void initialize() {
         hasSurface = false;
-        inactivityTimer = new InactivityTimer(this);
-        beepManager = new BeepManager(this);
-        ambientLightManager = new AmbientLightManager(this);
-
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        inactivityTimer = new InactivityTimer(getActivity());
+        beepManager = new BeepManager(getActivity());
+        ambientLightManager = new AmbientLightManager(getActivity());
+        PreferenceManager.setDefaultValues(getActivity(), R.xml.preferences, false);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // historyManager must be initialized here to update the history preference
-
-        // CameraManager must be initialized here, not in onCreate(). This is necessary because we don't
-        // want to open the camera driver and measure the screen size if we're going to show the help on
-        // first launch. That led to bugs where the scanning rectangle was the wrong size and partially
-        // off screen.
-        cameraManager = new CameraManager(getApplication());
-
-        viewfinderView = (ViewfinderView) findViewById(R.id.viewfinder_view);
-        viewfinderView.setCameraManager(cameraManager);
-
-        handler = null;
-        lastResult = null;
-        resetStatusView();
-
-        beepManager.updatePrefs();
-        ambientLightManager.start(cameraManager);
-        inactivityTimer.onResume();
-        sourceUrl = null;
-        scanFromWebPageManager = null;
-        decodeFormats = null;
-        characterSet = null;
-
-        SurfaceView surfaceView = (SurfaceView) findViewById(R.id.preview_view);
-        SurfaceHolder surfaceHolder = surfaceView.getHolder();
-        if (hasSurface) {
-            // The activity was paused but not stopped, so the surface still exists. Therefore
-            // surfaceCreated() won't be called, so init the camera here.
-            initCamera(surfaceHolder);
-        } else {
-            // Install the callback and wait for surfaceCreated() to init the camera.
-            surfaceHolder.addCallback(this);
-        }
-    }
 
     private int getCurrentOrientation() {
-        int rotation = getWindowManager().getDefaultDisplay().getRotation();
+        int rotation = getActivity().getWindowManager().getDefaultDisplay().getRotation();
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             switch (rotation) {
                 case Surface.ROTATION_0:
@@ -223,7 +204,37 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     }
 
     @Override
-    protected void onPause() {
+    public void onResume() {
+        super.onResume();
+        cameraManager = new CameraManager(getActivity().getApplicationContext());
+        viewfinderView.setCameraManager(cameraManager);
+
+        handler = null;
+        lastResult = null;
+        resetStatusView();
+
+        beepManager.updatePrefs();
+        ambientLightManager.start(cameraManager);
+        inactivityTimer.onResume();
+        sourceUrl = null;
+        scanFromWebPageManager = null;
+        decodeFormats = null;
+        characterSet = null;
+
+
+        SurfaceHolder surfaceHolder = surfaceView.getHolder();
+        if (hasSurface) {
+            // The activity was paused but not stopped, so the surface still exists. Therefore
+            // surfaceCreated() won't be called, so init the camera here.
+            initCamera(surfaceHolder);
+        } else {
+            // Install the callback and wait for surfaceCreated() to init the camera.
+            surfaceHolder.addCallback(this);
+        }
+    }
+
+    @Override
+    public void onPause() {
         if (handler != null) {
             handler.quitSynchronously();
             handler = null;
@@ -234,7 +245,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         cameraManager.closeDriver();
         //historyManager = null; // Keep for onActivityResult
         if (!hasSurface) {
-            SurfaceView surfaceView = (SurfaceView) findViewById(R.id.preview_view);
             SurfaceHolder surfaceHolder = surfaceView.getHolder();
             surfaceHolder.removeCallback(this);
         }
@@ -242,14 +252,11 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     }
 
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         inactivityTimer.shutdown();
         super.onDestroy();
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-    }
 
     private void decodeOrStoreSavedBitmap(Bitmap bitmap, Result result) {
         // Bitmap isn't used yet -- will be used soon
@@ -298,24 +305,13 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     public void handleDecode(Result rawResult, Bitmap barcode, float scaleFactor) {
         inactivityTimer.onActivity();
         lastResult = rawResult;
-        ResultHandler resultHandler = ResultHandlerFactory.makeResultHandler(this, rawResult);
-
         boolean fromLiveScan = barcode != null;
         if (fromLiveScan) {
 
         }
-
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        if (fromLiveScan && prefs.getBoolean(PreferencesActivity.KEY_BULK_MODE, false)) {
-            Toast.makeText(getApplicationContext(),
-                    getResources().getString(R.string.msg_bulk_mode_scanned) + " (" + rawResult.getText() + ')',
-                    Toast.LENGTH_SHORT).show();
-            // Wait a moment or else it will scan the same barcode continuously about 3 times
-            restartPreviewAfterDelay(BULK_MODE_SCAN_DELAY_MS);
-        } else {
-            handleDecodeInternally(rawResult, resultHandler, barcode);
-        }
-
+        if (mCallBack != null)
+            mCallBack.result(lastResult);
+        restartPreviewAfterDelay(BULK_MODE_SCAN_DELAY_MS);
     }
 
     /**
@@ -367,37 +363,28 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         CharSequence displayContents = resultHandler.getDisplayContents();
 
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
         if (resultHandler.getDefaultButtonID() != null && prefs.getBoolean(PreferencesActivity.KEY_AUTO_OPEN_WEB, false)) {
             resultHandler.handleButtonPress(resultHandler.getDefaultButtonID());
             return;
         }
 
-
         viewfinderView.setVisibility(View.GONE);
 
-        ImageView barcodeImageView = (ImageView) findViewById(R.id.barcode_image_view);
         if (barcode == null) {
             barcodeImageView.setImageBitmap(BitmapFactory.decodeResource(getResources(),
                     R.drawable.launcher_icon));
         } else {
             barcodeImageView.setImageBitmap(barcode);
         }
-
-        TextView formatTextView = (TextView) findViewById(R.id.format_text_view);
         formatTextView.setText(rawResult.getBarcodeFormat().toString());
-
-        TextView typeTextView = (TextView) findViewById(R.id.type_text_view);
         typeTextView.setText(resultHandler.getType().toString());
 
         DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
-        TextView timeTextView = (TextView) findViewById(R.id.time_text_view);
+
         timeTextView.setText(formatter.format(new Date(rawResult.getTimestamp())));
 
-
-        TextView metaTextView = (TextView) findViewById(R.id.meta_text_view);
-        View metaTextViewLabel = findViewById(R.id.meta_text_view_label);
         metaTextView.setVisibility(View.GONE);
         metaTextViewLabel.setVisibility(View.GONE);
         Map<ResultMetadataType, Object> metadata = rawResult.getResultMetadata();
@@ -415,13 +402,11 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                 metaTextViewLabel.setVisibility(View.VISIBLE);
             }
         }
-
-        TextView contentsTextView = (TextView) findViewById(R.id.contents_text_view);
         contentsTextView.setText(displayContents);
         int scaledSize = Math.max(22, 32 - displayContents.length() / 4);
         contentsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, scaledSize);
 
-        TextView supplementTextView = (TextView) findViewById(R.id.contents_supplement_text_view);
+
         supplementTextView.setText("");
         supplementTextView.setOnClickListener(null);
 
@@ -433,21 +418,19 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         if (barcode != null) {
             viewfinderView.drawResultBitmap(barcode);
         }
-
         long resultDurationMS;
-        if (getIntent() == null) {
+      /*  if (getIntent() == null) {
             resultDurationMS = DEFAULT_INTENT_RESULT_DURATION_MS;
         } else {
             resultDurationMS = getIntent().getLongExtra(Intents.Scan.RESULT_DISPLAY_DURATION_MS,
                     DEFAULT_INTENT_RESULT_DURATION_MS);
-        }
-
-        if (resultDurationMS > 0) {
+        }*/
+       /* if (resultDurationMS > 0) {
             String rawResultString = String.valueOf(rawResult);
             if (rawResultString.length() > 32) {
                 rawResultString = rawResultString.substring(0, 32) + " ...";
             }
-        }
+        }*/
 
     }
 
@@ -466,6 +449,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         if (surfaceHolder == null) {
             throw new IllegalStateException("No SurfaceHolder provided");
         }
+        cameraManager.setManualCameraId(1);
         if (cameraManager.isOpen()) {
             Log.w(TAG, "initCamera() while already open -- late SurfaceView callback?");
             return;
@@ -474,7 +458,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             cameraManager.openDriver(surfaceHolder);
             // Creating the handler starts the preview, which can also throw a RuntimeException.
             if (handler == null) {
-                handler = new CaptureActivityHandler(this, decodeFormats, decodeHints, characterSet, cameraManager);
+                handler = new CaptureFragmentHandler(this, decodeFormats, decodeHints, characterSet, cameraManager);
             }
             decodeOrStoreSavedBitmap(null, null);
         } catch (IOException ioe) {
@@ -489,11 +473,11 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     }
 
     private void displayFrameworkBugMessageAndExit() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(getString(R.string.app_name));
         builder.setMessage(getString(R.string.msg_camera_framework_bug));
-        builder.setPositiveButton(R.string.button_ok, new FinishListener(this));
-        builder.setOnCancelListener(new FinishListener(this));
+        builder.setPositiveButton(R.string.button_ok, new FinishListener(getActivity()));
+        builder.setOnCancelListener(new FinishListener(getActivity()));
         builder.show();
     }
 
