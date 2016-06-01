@@ -12,6 +12,7 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/xZbar" />
             <option value="$PROJECT_DIR$/xzbarapp" />
+            <option value="$PROJECT_DIR$/zbarexample" />
             <option value="$PROJECT_DIR$/zxing-android" />
           </set>
         </option>
@@ -22,6 +23,7 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/xZbar" />
             <option value="$PROJECT_DIR$/xzbarapp" />
+            <option value="$PROJECT_DIR$/zbarexample" />
             <option value="$PROJECT_DIR$/zxing-android" />
           </set>
         </option>

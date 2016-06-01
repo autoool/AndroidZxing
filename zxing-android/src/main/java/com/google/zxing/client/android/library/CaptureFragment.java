@@ -496,4 +496,6 @@ public class CaptureFragment extends Fragment implements SurfaceHolder.Callback 
     public void drawViewfinder() {
         viewfinderView.drawViewfinder();
     }
+
+
 }

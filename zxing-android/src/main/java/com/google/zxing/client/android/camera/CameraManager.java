@@ -86,7 +86,6 @@ public final class CameraManager {
             }
             camera = theCamera;
         }
-
         if (!initialized) {
             initialized = true;
             configManager.initFromCameraParameters(theCamera);
@@ -224,20 +223,12 @@ public final class CameraManager {
                 // Called early, before init even finished
                 return null;
             }
-            // TODO: 2016/5/25 start zc
-            DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-            int width = (int) (metrics.widthPixels * 0.6);
-            int height = (int) (width * 0.9);
-            /*int width = findDesiredDimensionInRange(screenResolution.x, MIN_FRAME_WIDTH, MAX_FRAME_WIDTH);
-            int height = findDesiredDimensionInRange(screenResolution.y, MIN_FRAME_HEIGHT, MAX_FRAME_HEIGHT);*/
-            // // TODO: 2016/5/25 end
 
+            int width = findDesiredDimensionInRange(screenResolution.x, MIN_FRAME_WIDTH, MAX_FRAME_WIDTH);
+            int height = findDesiredDimensionInRange(screenResolution.y, MIN_FRAME_HEIGHT, MAX_FRAME_HEIGHT);
 
             int leftOffset = (screenResolution.x - width) / 2;
-            // TODO: 2016/5/25 start
-            int topOffset = (screenResolution.y - height) / 4;
-//            int topOffset = (screenResolution.y - height) / 2;
-            // TODO: 2016/5/25 end
+            int topOffset = (screenResolution.y - height) / 2;
             framingRect = new Rect(leftOffset, topOffset, leftOffset + width, topOffset + height);
             Log.d(TAG, "Calculated framing rect: " + framingRect);
         }
@@ -274,15 +265,10 @@ public final class CameraManager {
                 // Called early, before init even finished
                 return null;
             }
-            // TODO: 2016/5/25 zc
-            rect.left = rect.left * cameraResolution.y / screenResolution.x;
-            rect.right = rect.right * cameraResolution.y / screenResolution.x;
-            rect.top = rect.top * cameraResolution.x / screenResolution.y;
-            rect.bottom = rect.bottom * cameraResolution.x / screenResolution.y;
-//      rect.left = rect.left * cameraResolution.x / screenResolution.x;
-//      rect.right = rect.right * cameraResolution.x / screenResolution.x;
-//      rect.top = rect.top * cameraResolution.y / screenResolution.y;
-//      rect.bottom = rect.bottom * cameraResolution.y / screenResolution.y;
+            rect.left = rect.left * cameraResolution.x / screenResolution.x;
+            rect.right = rect.right * cameraResolution.x / screenResolution.x;
+            rect.top = rect.top * cameraResolution.y / screenResolution.y;
+            rect.bottom = rect.bottom * cameraResolution.y / screenResolution.y;
             framingRectInPreview = rect;
         }
         return framingRectInPreview;
@@ -343,6 +329,13 @@ public final class CameraManager {
         // Go ahead and assume it's YUV rather than die.
         return new PlanarYUVLuminanceSource(data, width, height, rect.left, rect.top,
                 rect.width(), rect.height(), false);
+    }
+
+    public Camera.Size getPreviewSize() {
+        if (null != camera) {
+            return camera.getCamera().getParameters().getPreviewSize();
+        }
+        return null;
     }
 
 }

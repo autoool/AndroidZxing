@@ -27,27 +27,42 @@ import com.google.zxing.Result;
 import com.google.zxing.client.android.R;
 import com.google.zxing.common.HybridBinarizer;
 
+import android.graphics.Rect;
+import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
+import net.sourceforge.zbar.Config;
+import net.sourceforge.zbar.Image;
+import net.sourceforge.zbar.ImageScanner;
+
 import java.io.ByteArrayOutputStream;
 import java.util.Map;
 
 final class DecodeHandler extends Handler {
+
+    static {
+        System.loadLibrary("iconv");
+    }
 
     private static final String TAG = DecodeHandler.class.getSimpleName();
 
     private final CaptureFragment mFragment;
     private final MultiFormatReader multiFormatReader;
     private boolean running = true;
+    private ImageScanner mImageScanner;
 
     DecodeHandler(CaptureFragment fragment, Map<DecodeHintType, Object> hints) {
         multiFormatReader = new MultiFormatReader();
         multiFormatReader.setHints(hints);
         this.mFragment = fragment;
+        /* Instance barcode scanner */
+        mImageScanner = new ImageScanner();
+        mImageScanner.setConfig(0, Config.X_DENSITY, 3);
+        mImageScanner.setConfig(0, Config.Y_DENSITY, 3);
     }
 
     @Override
@@ -72,23 +87,20 @@ final class DecodeHandler extends Handler {
      * @param height The height of the preview frame.
      */
     private void decode(byte[] data, int width, int height) {
+        // zbar 解码
+        /*Camera.Size size = mFragment.getCameraManager().getPreviewSize();
+        byte[] rotatedData = new byte[data.length];
+        System.arraycopy(data,0,rotatedData,0,data.length);
+        Image barcode = new Image(size.width, size.height, "Y800");
+        barcode.setData(rotatedData);*/
+
+
+
+
+        //zxing 解码
         long start = System.currentTimeMillis();
         Result rawResult = null;
-
-        // TODO: 2016/5/25 zc
-        byte[] rotatedData = new byte[data.length];
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++)
-                rotatedData[x * height + height - y - 1] = data[x + y * width];
-        }
-        int tmp = width;
-        width = height;
-        height = tmp;
-        data = rotatedData;
-        // TODO: 2016/5/25 end
-
-        PlanarYUVLuminanceSource source =
-                mFragment.getCameraManager().buildLuminanceSource(data, width, height);
+        PlanarYUVLuminanceSource source = mFragment.getCameraManager().buildLuminanceSource(data, width, height);
         if (source != null) {
             BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
             try {
