@@ -38,6 +38,8 @@ import android.util.Log;
 import net.sourceforge.zbar.Config;
 import net.sourceforge.zbar.Image;
 import net.sourceforge.zbar.ImageScanner;
+import net.sourceforge.zbar.Symbol;
+import net.sourceforge.zbar.SymbolSet;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Map;
@@ -87,15 +89,6 @@ final class DecodeHandler extends Handler {
      * @param height The height of the preview frame.
      */
     private void decode(byte[] data, int width, int height) {
-        // zbar 解码
-        /*Camera.Size size = mFragment.getCameraManager().getPreviewSize();
-        byte[] rotatedData = new byte[data.length];
-        System.arraycopy(data,0,rotatedData,0,data.length);
-        Image barcode = new Image(size.width, size.height, "Y800");
-        barcode.setData(rotatedData);*/
-
-
-
 
         //zxing 解码
         long start = System.currentTimeMillis();

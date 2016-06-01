@@ -43,6 +43,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -57,11 +58,8 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -122,14 +120,14 @@ public class CaptureFragment extends Fragment implements SurfaceHolder.Callback 
 
     private Result lastResult;
     private boolean hasSurface;
-    private String sourceUrl;
-    private ScanFromWebPageManager scanFromWebPageManager;
     private Collection<BarcodeFormat> decodeFormats;
     private Map<DecodeHintType, ?> decodeHints;
     private String characterSet;
     private InactivityTimer inactivityTimer;
     private BeepManager beepManager;
     private AmbientLightManager ambientLightManager;
+
+    private Rect mRect = null;
 
     ViewfinderView getViewfinderView() {
         return viewfinderView;
@@ -216,8 +214,6 @@ public class CaptureFragment extends Fragment implements SurfaceHolder.Callback 
         beepManager.updatePrefs();
         ambientLightManager.start(cameraManager);
         inactivityTimer.onResume();
-        sourceUrl = null;
-        scanFromWebPageManager = null;
         decodeFormats = null;
         characterSet = null;
 

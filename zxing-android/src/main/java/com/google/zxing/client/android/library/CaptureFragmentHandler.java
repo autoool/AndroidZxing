@@ -83,6 +83,7 @@ public final class CaptureFragmentHandler extends Handler {
         if (message.what == R.id.restart_preview) {
             restartPreviewAndDecode();
         } else if (message.what == R.id.decode_succeeded) {
+
             state = State.SUCCESS;
             Bundle bundle = message.getData();
             Bitmap barcode = null;

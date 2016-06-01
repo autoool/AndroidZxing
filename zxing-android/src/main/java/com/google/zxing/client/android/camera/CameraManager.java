@@ -56,7 +56,7 @@ public final class CameraManager {
     private Rect framingRectInPreview;
     private boolean initialized;
     private boolean previewing;
-    private int requestedCameraId = OpenCameraInterface.NO_REQUESTED_CAMERA;
+    private int requestedCameraId = 1;
     private int requestedFramingRectWidth;
     private int requestedFramingRectHeight;
     /**
@@ -68,7 +68,7 @@ public final class CameraManager {
     public CameraManager(Context context) {
         this.context = context;
         this.configManager = new CameraConfigurationManager(context);
-        previewCallback = new PreviewCallback(configManager);
+        previewCallback = new PreviewCallback(configManager, camera);
     }
 
     /**
@@ -80,7 +80,7 @@ public final class CameraManager {
     public synchronized void openDriver(SurfaceHolder holder) throws IOException {
         OpenCamera theCamera = camera;
         if (theCamera == null) {
-            theCamera = OpenCameraInterface.open(requestedCameraId);
+            theCamera = OpenCameraInterface.open(1);
             if (theCamera == null) {
                 throw new IOException("Camera.open() failed to return object from driver");
             }
@@ -334,6 +334,13 @@ public final class CameraManager {
     public Camera.Size getPreviewSize() {
         if (null != camera) {
             return camera.getCamera().getParameters().getPreviewSize();
+        }
+        return null;
+    }
+
+    public OpenCamera getCamera() {
+        if (null != camera) {
+            return camera;
         }
         return null;
     }
