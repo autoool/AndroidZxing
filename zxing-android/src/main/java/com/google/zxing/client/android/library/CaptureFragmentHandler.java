@@ -83,8 +83,11 @@ public final class CaptureFragmentHandler extends Handler {
         if (message.what == R.id.restart_preview) {
             restartPreviewAndDecode();
         } else if (message.what == R.id.decode_succeeded) {
+            //zbar 扫码成功
+            mFragment.handleZbarCode((String) message.obj);
 
-            state = State.SUCCESS;
+            //zxing 扫码成功
+           /* state = State.SUCCESS;
             Bundle bundle = message.getData();
             Bitmap barcode = null;
             float scaleFactor = 1.0f;
@@ -97,7 +100,7 @@ public final class CaptureFragmentHandler extends Handler {
                 }
                 scaleFactor = bundle.getFloat(DecodeThread.BARCODE_SCALED_FACTOR);
             }
-            mFragment.handleDecode((Result) message.obj, barcode, scaleFactor);
+            mFragment.handleDecode((Result) message.obj, barcode, scaleFactor);*/
         } else if (message.what == R.id.decode_failed) {
             state = State.PREVIEW;
             cameraManager.requestPreviewFrame(decodeThread.getHandler(), R.id.decode);

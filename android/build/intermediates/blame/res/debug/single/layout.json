@@ -8,12 +8,12 @@
         "source": "E:\\MyGithub\\AndroidZxing\\android\\src\\main\\res\\layout\\search_book_contents.xml"
     },
     {
-        "merged": "E:\\MyGithub\\AndroidZxing\\android\\build\\intermediates\\res\\merged\\debug\\layout\\search_book_contents_header.xml",
-        "source": "E:\\MyGithub\\AndroidZxing\\android\\src\\main\\res\\layout\\search_book_contents_header.xml"
-    },
-    {
         "merged": "E:\\MyGithub\\AndroidZxing\\android\\build\\intermediates\\res\\merged\\debug\\layout\\app_picker_list_item.xml",
         "source": "E:\\MyGithub\\AndroidZxing\\android\\src\\main\\res\\layout\\app_picker_list_item.xml"
+    },
+    {
+        "merged": "E:\\MyGithub\\AndroidZxing\\android\\build\\intermediates\\res\\merged\\debug\\layout\\search_book_contents_header.xml",
+        "source": "E:\\MyGithub\\AndroidZxing\\android\\src\\main\\res\\layout\\search_book_contents_header.xml"
     },
     {
         "merged": "E:\\MyGithub\\AndroidZxing\\android\\build\\intermediates\\res\\merged\\debug\\layout\\capture.xml",

@@ -24,16 +24,16 @@
         "source": "E:\\MyGithub\\AndroidZxing\\zxing-android\\build\\intermediates\\bundles\\debug\\res\\layout\\search_book_contents_list_item.xml"
     },
     {
+        "merged": "E:\\MyGithub\\AndroidZxing\\zxing-android\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\search_book_contents_header.xml",
+        "source": "E:\\MyGithub\\AndroidZxing\\zxing-android\\build\\intermediates\\bundles\\debug\\res\\layout\\search_book_contents_header.xml"
+    },
+    {
         "merged": "E:\\MyGithub\\AndroidZxing\\zxing-android\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\app_picker_list_item.xml",
         "source": "E:\\MyGithub\\AndroidZxing\\zxing-android\\build\\intermediates\\bundles\\debug\\res\\layout\\app_picker_list_item.xml"
     },
     {
         "merged": "E:\\MyGithub\\AndroidZxing\\zxing-android\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\share.xml",
         "source": "E:\\MyGithub\\AndroidZxing\\zxing-android\\build\\intermediates\\bundles\\debug\\res\\layout\\share.xml"
-    },
-    {
-        "merged": "E:\\MyGithub\\AndroidZxing\\zxing-android\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\search_book_contents_header.xml",
-        "source": "E:\\MyGithub\\AndroidZxing\\zxing-android\\build\\intermediates\\bundles\\debug\\res\\layout\\search_book_contents_header.xml"
     },
     {
         "merged": "E:\\MyGithub\\AndroidZxing\\zxing-android\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\history_list_item.xml",

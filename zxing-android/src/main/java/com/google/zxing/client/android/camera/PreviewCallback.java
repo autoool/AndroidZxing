@@ -60,20 +60,42 @@ final class PreviewCallback implements Camera.PreviewCallback {
         barcode.setData(rotatedData);
         int result = mImageScanner.scanImage(barcode);
         if (result != 0) {
+            this.camera.getCamera().setPreviewCallback(null);
+            this.camera.getCamera().stopPreview();
+            SymbolSet syms = mImageScanner.getResults();
+            for (Symbol sym : syms) {
+                Log.d("scam: ", sym.getData());
+                Handler thePreviewHandler = previewHandler;
+                if (thePreviewHandler != null) {
+                    Message message = thePreviewHandler.obtainMessage(previewMessage, sym.getData());
+                    message.sendToTarget();
+                }
+            }
+        }
+        /*byte[] rotatedData = new byte[data.length];
+        System.arraycopy(data, 0, rotatedData, 0, data.length);
+        Image barcode = new Image(size.width, size.height, "Y800");
+        barcode.setData(rotatedData);
+        int result = mImageScanner.scanImage(barcode);
+        if (result != 0) {
             SymbolSet syms = mImageScanner.getResults();
             for (Symbol sym : syms)
                 Log.d("scam: ", sym.getData());
-        }
-//        Point cameraResolution = configManager.getCameraResolution();
-//        Handler thePreviewHandler = previewHandler;
-//        if (cameraResolution != null && thePreviewHandler != null) {
-//            Message message = thePreviewHandler.obtainMessage(previewMessage, cameraResolution.x,
-//                    cameraResolution.y, data);
-//            message.sendToTarget();
-//            previewHandler = null;
-//        } else {
-//            Log.d(TAG, "Got preview callback, but no handler or resolution available");
-//        }
+        }*/
+
+
+        //zxing 解码
+       /* Point cameraResolution = configManager.getCameraResolution();
+        Handler thePreviewHandler = previewHandler;
+        if (cameraResolution != null && thePreviewHandler != null) {
+            Message message = thePreviewHandler.obtainMessage(previewMessage, cameraResolution.x,
+                    cameraResolution.y, data);
+            message.sendToTarget();
+            previewHandler = null;
+        } else {
+            Log.d(TAG, "Got preview callback, but no handler or resolution available");
+        }*/
+
     }
 
 }

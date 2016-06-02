@@ -20,8 +20,9 @@ public class ScanCodeFragment extends CaptureFragment {
         super.onCreate(savedInstanceState);
         this.setCallBack(new IResultCallback() {
             @Override
-            public void result(Result lastResult) {
-                Toast.makeText(getActivity().getApplicationContext(), lastResult.toString(), Toast.LENGTH_SHORT).show();
+            public void result(String result) {
+                Toast.makeText(getActivity().getApplicationContext(), result, Toast.LENGTH_SHORT).show();
+                getActivity().finish();
             }
         });
     }

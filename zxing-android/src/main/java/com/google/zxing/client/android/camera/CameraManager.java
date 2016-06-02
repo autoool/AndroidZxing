@@ -56,19 +56,18 @@ public final class CameraManager {
     private Rect framingRectInPreview;
     private boolean initialized;
     private boolean previewing;
-    private int requestedCameraId = 1;
+    private int requestedCameraId = 0;
     private int requestedFramingRectWidth;
     private int requestedFramingRectHeight;
     /**
      * Preview frames are delivered here, which we pass on to the registered handler. Make sure to
      * clear the handler so it will only receive one message.
      */
-    private final PreviewCallback previewCallback;
+    private PreviewCallback previewCallback;
 
     public CameraManager(Context context) {
         this.context = context;
         this.configManager = new CameraConfigurationManager(context);
-        previewCallback = new PreviewCallback(configManager, camera);
     }
 
     /**
@@ -80,11 +79,12 @@ public final class CameraManager {
     public synchronized void openDriver(SurfaceHolder holder) throws IOException {
         OpenCamera theCamera = camera;
         if (theCamera == null) {
-            theCamera = OpenCameraInterface.open(1);
+            theCamera = OpenCameraInterface.open(requestedCameraId);
             if (theCamera == null) {
                 throw new IOException("Camera.open() failed to return object from driver");
             }
             camera = theCamera;
+            previewCallback = new PreviewCallback(configManager, camera);
         }
         if (!initialized) {
             initialized = true;
@@ -103,8 +103,6 @@ public final class CameraManager {
             configManager.setDesiredCameraParameters(theCamera, false);
         } catch (RuntimeException re) {
             // Driver failed
-            Log.w(TAG, "Camera rejected parameters. Setting only minimal safe-mode parameters");
-            Log.i(TAG, "Resetting to saved camera params: " + parametersFlattened);
             // Reset:
             if (parametersFlattened != null) {
                 parameters = cameraObject.getParameters();
@@ -114,11 +112,13 @@ public final class CameraManager {
                     configManager.setDesiredCameraParameters(theCamera, true);
                 } catch (RuntimeException re2) {
                     // Well, darn. Give up
-                    Log.w(TAG, "Camera rejected even safe-mode parameters! No configuration");
+//                    Log.w(TAG, "Camera rejected even safe-mode parameters! No configuration");
                 }
             }
         }
         cameraObject.setPreviewDisplay(holder);
+        // TODO: 2016/6/2  这个方法很重要，扫码zc
+        cameraObject.setPreviewCallback(previewCallback);
 
     }
 
@@ -202,7 +202,6 @@ public final class CameraManager {
         OpenCamera theCamera = camera;
         if (theCamera != null && previewing) {
             previewCallback.setHandler(handler, message);
-            theCamera.getCamera().setOneShotPreviewCallback(previewCallback);
         }
     }
 
@@ -230,7 +229,6 @@ public final class CameraManager {
             int leftOffset = (screenResolution.x - width) / 2;
             int topOffset = (screenResolution.y - height) / 2;
             framingRect = new Rect(leftOffset, topOffset, leftOffset + width, topOffset + height);
-            Log.d(TAG, "Calculated framing rect: " + framingRect);
         }
         return framingRect;
     }
@@ -304,7 +302,6 @@ public final class CameraManager {
             int leftOffset = (screenResolution.x - width) / 2;
             int topOffset = (screenResolution.y - height) / 2;
             framingRect = new Rect(leftOffset, topOffset, leftOffset + width, topOffset + height);
-            Log.d(TAG, "Calculated manual framing rect: " + framingRect);
             framingRectInPreview = null;
         } else {
             requestedFramingRectWidth = width;

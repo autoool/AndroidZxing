@@ -50,6 +50,7 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -58,13 +59,14 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
+
+import net.sourceforge.zbar.Image;
+import net.sourceforge.zbar.Symbol;
+import net.sourceforge.zbar.SymbolSet;
 
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Collection;
-import java.util.Date;
 import java.util.EnumSet;
 import java.util.Map;
 
@@ -81,7 +83,7 @@ public class CaptureFragment extends Fragment implements SurfaceHolder.Callback 
     private static final String TAG = CaptureFragment.class.getSimpleName();
 
     public interface IResultCallback {
-        void result(Result lastResult);
+        void result(String result);
     }
 
     private IResultCallback mCallBack;
@@ -109,14 +111,6 @@ public class CaptureFragment extends Fragment implements SurfaceHolder.Callback 
 
     private ViewfinderView viewfinderView;
     private SurfaceView surfaceView;
-    private TextView formatTextView;
-    private TextView timeTextView;
-    private TextView metaTextView;
-    private View metaTextViewLabel;
-    private TextView typeTextView;
-    private ImageView barcodeImageView;
-    private TextView supplementTextView;
-    private TextView contentsTextView;
 
     private Result lastResult;
     private boolean hasSurface;
@@ -147,14 +141,6 @@ public class CaptureFragment extends Fragment implements SurfaceHolder.Callback 
         View view = inflater.inflate(R.layout.capture, container, false);
         viewfinderView = (ViewfinderView) view.findViewById(R.id.viewfinder_view);
         surfaceView = (SurfaceView) view.findViewById(R.id.preview_view);
-        formatTextView = (TextView) view.findViewById(R.id.format_text_view);
-        timeTextView = (TextView) view.findViewById(R.id.time_text_view);
-        metaTextView = (TextView) view.findViewById(R.id.meta_text_view);
-        metaTextViewLabel = view.findViewById(R.id.meta_text_view_label);
-        typeTextView = (TextView) view.findViewById(R.id.type_text_view);
-        barcodeImageView = (ImageView) view.findViewById(R.id.barcode_image_view);
-        supplementTextView = (TextView) view.findViewById(R.id.contents_supplement_text_view);
-        contentsTextView = (TextView) view.findViewById(R.id.contents_text_view);
         initialize();
         return view;
     }
@@ -189,18 +175,6 @@ public class CaptureFragment extends Fragment implements SurfaceHolder.Callback 
         }
     }
 
-    private static boolean isZXingURL(String dataString) {
-        if (dataString == null) {
-            return false;
-        }
-        for (String url : ZXING_URLS) {
-            if (dataString.startsWith(url)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     @Override
     public void onResume() {
         super.onResume();
@@ -231,6 +205,11 @@ public class CaptureFragment extends Fragment implements SurfaceHolder.Callback 
 
     @Override
     public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
         if (handler != null) {
             handler.quitSynchronously();
             handler = null;
@@ -244,11 +223,7 @@ public class CaptureFragment extends Fragment implements SurfaceHolder.Callback 
             SurfaceHolder surfaceHolder = surfaceView.getHolder();
             surfaceHolder.removeCallback(this);
         }
-        super.onPause();
-    }
 
-    @Override
-    public void onDestroy() {
         inactivityTimer.shutdown();
         super.onDestroy();
     }
@@ -288,7 +263,6 @@ public class CaptureFragment extends Fragment implements SurfaceHolder.Callback 
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
     }
 
     /**
@@ -303,11 +277,20 @@ public class CaptureFragment extends Fragment implements SurfaceHolder.Callback 
         lastResult = rawResult;
         boolean fromLiveScan = barcode != null;
         if (fromLiveScan) {
-
+            drawResultPoints(barcode, scaleFactor, rawResult);
         }
-        if (mCallBack != null)
-            mCallBack.result(lastResult);
+        if (!TextUtils.isEmpty(rawResult.getText())) {
+            beepManager.playBeepSoundAndVibrate();
+            if (mCallBack != null)
+                mCallBack.result(lastResult.toString());
+        }
         restartPreviewAfterDelay(BULK_MODE_SCAN_DELAY_MS);
+    }
+
+    public void handleZbarCode(String barcode) {
+        beepManager.playBeepSoundAndVibrate();
+        if (mCallBack != null)
+            mCallBack.result(barcode);
     }
 
     /**
@@ -368,21 +351,9 @@ public class CaptureFragment extends Fragment implements SurfaceHolder.Callback 
 
         viewfinderView.setVisibility(View.GONE);
 
-        if (barcode == null) {
-            barcodeImageView.setImageBitmap(BitmapFactory.decodeResource(getResources(),
-                    R.drawable.launcher_icon));
-        } else {
-            barcodeImageView.setImageBitmap(barcode);
-        }
-        formatTextView.setText(rawResult.getBarcodeFormat().toString());
-        typeTextView.setText(resultHandler.getType().toString());
 
         DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
 
-        timeTextView.setText(formatter.format(new Date(rawResult.getTimestamp())));
-
-        metaTextView.setVisibility(View.GONE);
-        metaTextViewLabel.setVisibility(View.GONE);
         Map<ResultMetadataType, Object> metadata = rawResult.getResultMetadata();
         if (metadata != null) {
             StringBuilder metadataText = new StringBuilder(20);
@@ -393,19 +364,9 @@ public class CaptureFragment extends Fragment implements SurfaceHolder.Callback 
             }
             if (metadataText.length() > 0) {
                 metadataText.setLength(metadataText.length() - 1);
-                metaTextView.setText(metadataText);
-                metaTextView.setVisibility(View.VISIBLE);
-                metaTextViewLabel.setVisibility(View.VISIBLE);
+
             }
         }
-        contentsTextView.setText(displayContents);
-        int scaledSize = Math.max(22, 32 - displayContents.length() / 4);
-        contentsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, scaledSize);
-
-
-        supplementTextView.setText("");
-        supplementTextView.setOnClickListener(null);
-
     }
 
     // Briefly show the contents of the barcode, then handle the result outside Barcode Scanner.
@@ -445,7 +406,7 @@ public class CaptureFragment extends Fragment implements SurfaceHolder.Callback 
         if (surfaceHolder == null) {
             throw new IllegalStateException("No SurfaceHolder provided");
         }
-        cameraManager.setManualCameraId(1);
+        cameraManager.setManualCameraId(0);
         if (cameraManager.isOpen()) {
             Log.w(TAG, "initCamera() while already open -- late SurfaceView callback?");
             return;

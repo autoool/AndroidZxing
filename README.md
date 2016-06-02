@@ -1,6 +1,8 @@
 ## zxing 扫码
 
+### zbarexample
 
+- zbar官方示例
 
 ## zxbar
 
@@ -15,9 +17,10 @@
 
 ## zxing-android
 
-- 待提取成library 
 - 参考[https://github.com/mitoyarzun/zxingfragmentlib]
 - 原因：一直使用上面的库，在使用过程中发现一维码和二维码识别的并不很好，好像很距离有关。有时候很久扫不出来，一维码识别感觉没有二维码有效。但是使用Barcode Scan 这个app，一维码和二维码都很有效的识别，速度也很快。所以打算自己打一个包
+- 提取成library  zxing 和 zbar 的混合，扫码速度很快 使用方法见app项目示例
+- todo  扫码框样式调整
 
 ## app
 

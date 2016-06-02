@@ -27,12 +27,11 @@ import com.google.zxing.Result;
 import com.google.zxing.client.android.R;
 import com.google.zxing.common.HybridBinarizer;
 
-import android.graphics.Rect;
-import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 
 import net.sourceforge.zbar.Config;
@@ -73,7 +72,8 @@ final class DecodeHandler extends Handler {
             return;
         }
         if (message.what == R.id.decode) {
-            decode((byte[]) message.obj, message.arg1, message.arg2);
+//            decode((byte[]) message.obj, message.arg1, message.arg2);
+            decodeZbar((String) message.obj);
         } else if (message.what == R.id.quit) {
             running = false;
             Looper.myLooper().quit();
@@ -89,7 +89,6 @@ final class DecodeHandler extends Handler {
      * @param height The height of the preview frame.
      */
     private void decode(byte[] data, int width, int height) {
-
         //zxing 解码
         long start = System.currentTimeMillis();
         Result rawResult = null;
@@ -117,6 +116,23 @@ final class DecodeHandler extends Handler {
                 message.setData(bundle);
                 message.sendToTarget();
             }
+        } else {
+            if (handler != null) {
+                Message message = Message.obtain(handler, R.id.decode_failed);
+                message.sendToTarget();
+            }
+        }
+    }
+
+    private void decodeZbar(String barcode) {
+        //zbar 解码
+        Handler handler = mFragment.getHandler();
+        if (!TextUtils.isEmpty(barcode)) {
+            if (handler != null) {
+                Message message = Message.obtain(handler, R.id.decode_succeeded, barcode);
+                message.sendToTarget();
+            }
+
         } else {
             if (handler != null) {
                 Message message = Message.obtain(handler, R.id.decode_failed);
