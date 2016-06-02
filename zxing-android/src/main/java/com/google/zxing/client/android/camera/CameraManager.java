@@ -91,8 +91,8 @@ public final class CameraManager {
             configManager.initFromCameraParameters(theCamera);
             if (requestedFramingRectWidth > 0 && requestedFramingRectHeight > 0) {
                 setManualFramingRect(requestedFramingRectWidth, requestedFramingRectHeight);
-                requestedFramingRectWidth = 0;
-                requestedFramingRectHeight = 0;
+                requestedFramingRectWidth = 1;
+                requestedFramingRectHeight = 1;
             }
         }
 
@@ -117,9 +117,6 @@ public final class CameraManager {
             }
         }
         cameraObject.setPreviewDisplay(holder);
-        // TODO: 2016/6/2  这个方法很重要，扫码zc
-        cameraObject.setPreviewCallback(previewCallback);
-
     }
 
     public synchronized boolean isOpen() {
@@ -131,6 +128,8 @@ public final class CameraManager {
      */
     public synchronized void closeDriver() {
         if (camera != null) {
+            this.camera.getCamera().setPreviewCallback(null);
+            this.camera.getCamera().stopPreview();
             camera.getCamera().release();
             camera = null;
             // Make sure to clear these each time we close the camera, so that any scanning rect
@@ -148,6 +147,7 @@ public final class CameraManager {
         if (theCamera != null && !previewing) {
             theCamera.getCamera().startPreview();
             previewing = true;
+            // TODO: 2016/6/2  这个方法很重要，扫码zc
             autoFocusManager = new AutoFocusManager(context, theCamera.getCamera());
         }
     }
@@ -202,6 +202,7 @@ public final class CameraManager {
         OpenCamera theCamera = camera;
         if (theCamera != null && previewing) {
             previewCallback.setHandler(handler, message);
+            theCamera.getCamera().setPreviewCallback(previewCallback);
         }
     }
 
@@ -222,12 +223,17 @@ public final class CameraManager {
                 // Called early, before init even finished
                 return null;
             }
-
-            int width = findDesiredDimensionInRange(screenResolution.x, MIN_FRAME_WIDTH, MAX_FRAME_WIDTH);
-            int height = findDesiredDimensionInRange(screenResolution.y, MIN_FRAME_HEIGHT, MAX_FRAME_HEIGHT);
-
+            //修改扫描框的大小
+            DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+            int width = (int) (metrics.widthPixels * 0.7);
+            int height = (int) (metrics.heightPixels * 0.7);
             int leftOffset = (screenResolution.x - width) / 2;
-            int topOffset = (screenResolution.y - height) / 2;
+            int topOffset = (screenResolution.y - height) / 4;
+            if (metrics.heightPixels > metrics.widthPixels) {
+                width = (int) (metrics.widthPixels * 0.7);
+                height = width;
+                topOffset = (screenResolution.y - height) / 3;
+            }
             framingRect = new Rect(leftOffset, topOffset, leftOffset + width, topOffset + height);
         }
         return framingRect;

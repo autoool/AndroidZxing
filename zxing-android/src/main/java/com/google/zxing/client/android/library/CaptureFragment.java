@@ -25,22 +25,17 @@ import com.google.zxing.client.android.AmbientLightManager;
 import com.google.zxing.client.android.BeepManager;
 import com.google.zxing.client.android.FinishListener;
 import com.google.zxing.client.android.InactivityTimer;
-import com.google.zxing.client.android.Intents;
 import com.google.zxing.client.android.PreferencesActivity;
 import com.google.zxing.client.android.R;
-import com.google.zxing.client.android.ScanFromWebPageManager;
 import com.google.zxing.client.android.ViewfinderView;
 import com.google.zxing.client.android.camera.CameraManager;
 import com.google.zxing.client.android.result.ResultHandler;
-import com.google.zxing.client.android.result.ResultHandlerFactory;
 
 import android.app.AlertDialog;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -52,17 +47,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
-
-import net.sourceforge.zbar.Image;
-import net.sourceforge.zbar.Symbol;
-import net.sourceforge.zbar.SymbolSet;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -205,6 +195,19 @@ public class CaptureFragment extends Fragment implements SurfaceHolder.Callback 
 
     @Override
     public void onPause() {
+        if (handler != null) {
+            handler.quitSynchronously();
+            handler = null;
+        }
+        inactivityTimer.onPause();
+        ambientLightManager.stop();
+        beepManager.close();
+        cameraManager.closeDriver();
+        //historyManager = null; // Keep for onActivityResult
+        if (!hasSurface) {
+            SurfaceHolder surfaceHolder = surfaceView.getHolder();
+            surfaceHolder.removeCallback(this);
+        }
         super.onPause();
     }
 

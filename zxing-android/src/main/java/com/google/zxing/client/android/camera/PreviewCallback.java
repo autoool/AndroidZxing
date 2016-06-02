@@ -72,16 +72,6 @@ final class PreviewCallback implements Camera.PreviewCallback {
                 }
             }
         }
-        /*byte[] rotatedData = new byte[data.length];
-        System.arraycopy(data, 0, rotatedData, 0, data.length);
-        Image barcode = new Image(size.width, size.height, "Y800");
-        barcode.setData(rotatedData);
-        int result = mImageScanner.scanImage(barcode);
-        if (result != 0) {
-            SymbolSet syms = mImageScanner.getResults();
-            for (Symbol sym : syms)
-                Log.d("scam: ", sym.getData());
-        }*/
 
 
         //zxing 解码

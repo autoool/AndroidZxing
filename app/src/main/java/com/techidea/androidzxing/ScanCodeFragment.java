@@ -4,8 +4,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 
-import com.google.zxing.Result;
 import com.google.zxing.client.android.library.CaptureFragment;
+
 
 /**
  * Created by zchao on 2016/5/31.

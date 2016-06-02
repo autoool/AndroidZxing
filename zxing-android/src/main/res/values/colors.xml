@@ -27,4 +27,5 @@
     <color name="viewfinder_laser">#ffcc0000</color> <!-- Android standard ICS color -->
     <color name="viewfinder_mask">#60000000</color>
     <color name="viewfinder_green">#ff2ecc71</color>
+    <color name="viewfinder_corner_color">@android:color/holo_blue_light</color>
 </resources>

@@ -50,8 +50,9 @@ public final class ViewfinderView extends View {
     private Bitmap resultBitmap;
     private final int maskColor;
     private final int resultColor;
-    private final int laserColor;
+    private final int lineColor;
     private final int resultPointColor;
+    private final int cornorColor;
     private int scannerAlpha;
     private List<ResultPoint> possibleResultPoints;
     private List<ResultPoint> lastPossibleResultPoints;
@@ -65,8 +66,9 @@ public final class ViewfinderView extends View {
         Resources resources = getResources();
         maskColor = resources.getColor(R.color.viewfinder_mask);
         resultColor = resources.getColor(R.color.result_view);
-        laserColor = resources.getColor(R.color.viewfinder_laser);
+        lineColor = resources.getColor(R.color.viewfinder_corner_color);
         resultPointColor = resources.getColor(R.color.possible_result_points);
+        cornorColor = resources.getColor(R.color.viewfinder_corner_color);
         scannerAlpha = 0;
         possibleResultPoints = new ArrayList<>(5);
         lastPossibleResultPoints = null;
@@ -97,6 +99,24 @@ public final class ViewfinderView extends View {
         canvas.drawRect(frame.right + 1, frame.top, width, frame.bottom + 1, paint);
         canvas.drawRect(0, frame.bottom + 1, width, height, paint);
 
+        //画出四个角
+        paint.setColor(cornorColor);
+        //左上角
+        canvas.drawRect(frame.left, frame.top, frame.left + 20, frame.top + 5, paint);
+        canvas.drawRect(frame.left, frame.top, frame.left + 5, frame.top +20, paint);
+
+        //右上角
+        canvas.drawRect(frame.right - 20, frame.top, frame.right, frame.top + 5, paint);
+        canvas.drawRect(frame.right - 5, frame.top, frame.right, frame.top + 20, paint);
+
+        //左下角
+        canvas.drawRect(frame.left, frame.bottom - 5, frame.left + 20, frame.bottom, paint);
+        canvas.drawRect(frame.left, frame.bottom - 20, frame.left + 5, frame.bottom, paint);
+
+        //右下角
+        canvas.drawRect(frame.right - 20, frame.bottom - 5, frame.right, frame.bottom, paint);
+        canvas.drawRect(frame.right - 5, frame.bottom - 20, frame.right, frame.bottom, paint);
+
         if (resultBitmap != null) {
             // Draw the opaque result bitmap over the scanning rectangle
             paint.setAlpha(CURRENT_POINT_OPACITY);
@@ -104,11 +124,14 @@ public final class ViewfinderView extends View {
         } else {
 
             // Draw a red "laser scanner" line through the middle to show decoding is active
-            paint.setColor(laserColor);
+            paint.setColor(cornorColor);
             paint.setAlpha(SCANNER_ALPHA[scannerAlpha]);
             scannerAlpha = (scannerAlpha + 1) % SCANNER_ALPHA.length;
             int middle = frame.height() / 2 + frame.top;
             canvas.drawRect(frame.left + 2, middle - 1, frame.right - 1, middle + 2, paint);
+
+
+
 
             float scaleX = frame.width() / (float) previewFrame.width();
             float scaleY = frame.height() / (float) previewFrame.height();
