@@ -4,6 +4,13 @@ android {
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
 
+    sourceSets {
+        main {
+            jniLibs.srcDirs = [jni_lib_path]
+        }
+    }
+
+
     defaultConfig {
         applicationId "com.techidea.androidzxing.test"
         minSdkVersion 16
@@ -19,11 +26,17 @@ android {
     }
 }
 
+repositories {
+    flatDir() {
+        dirs 'libs'
+    }
+}
+
 dependencies {
+//    compile(name: 'zxing-android-release', ext: 'aar')
 
     debugCompile "com.squareup.leakcanary:leakcanary-android:$leakcanary_version"
     releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$leakcanary_version"
-
     testCompile 'junit:junit:4.12'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.android.support:appcompat-v7:23.4.0'

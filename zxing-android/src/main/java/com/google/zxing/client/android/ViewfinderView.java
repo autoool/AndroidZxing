@@ -26,6 +26,8 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -45,6 +47,13 @@ public final class ViewfinderView extends View {
     private static final int CURRENT_POINT_OPACITY = 0xA0;
     private static final int MAX_RESULT_POINTS = 20;
     private static final int POINT_SIZE = 6;
+
+    private GradientDrawable mDrawable;
+    private Rect mRect;
+    //中间滑动线最顶端位置
+    private int slideTop;
+    private int slideSpeed = 15;
+
     private CameraManager cameraManager;
     private final Paint paint;
     private Bitmap resultBitmap;
@@ -72,6 +81,10 @@ public final class ViewfinderView extends View {
         scannerAlpha = 0;
         possibleResultPoints = new ArrayList<>(5);
         lastPossibleResultPoints = null;
+
+        int[] colors = {lineColor,lineColor,lineColor};
+        mRect = new Rect();
+        mDrawable = new GradientDrawable(GradientDrawable.Orientation.BL_TR, colors);
     }
 
     public void setCameraManager(CameraManager cameraManager) {
@@ -103,7 +116,7 @@ public final class ViewfinderView extends View {
         paint.setColor(cornorColor);
         //左上角
         canvas.drawRect(frame.left, frame.top, frame.left + 20, frame.top + 5, paint);
-        canvas.drawRect(frame.left, frame.top, frame.left + 5, frame.top +20, paint);
+        canvas.drawRect(frame.left, frame.top, frame.left + 5, frame.top + 20, paint);
 
         //右上角
         canvas.drawRect(frame.right - 20, frame.top, frame.right, frame.top + 5, paint);
@@ -127,11 +140,20 @@ public final class ViewfinderView extends View {
             paint.setColor(cornorColor);
             paint.setAlpha(SCANNER_ALPHA[scannerAlpha]);
             scannerAlpha = (scannerAlpha + 1) % SCANNER_ALPHA.length;
-            int middle = frame.height() / 2 + frame.top;
-            canvas.drawRect(frame.left + 2, middle - 1, frame.right - 1, middle + 2, paint);
+//            int middle = frame.height() / 2 + frame.top;
+//            canvas.drawRect(frame.left + 2, middle - 1, frame.right - 1, middle + 2, paint);
+            int i = 0;
+            if ((slideTop += slideSpeed) < (frame.bottom - frame.top)) {
+                mDrawable.setShape(GradientDrawable.RECTANGLE);
+                mDrawable.setCornerRadii(new float[]{8, 8, 8, 8, 8, 8, 8, 8});
+                mRect.set(frame.left + 10, frame.top + slideTop, frame.right - 10,
+                        frame.top + 1 + i);
+                mDrawable.setBounds(mRect);
+                mDrawable.draw(canvas);
 
-
-
+            } else {
+                slideTop = 0;
+            }
 
             float scaleX = frame.width() / (float) previewFrame.width();
             float scaleY = frame.height() / (float) previewFrame.height();

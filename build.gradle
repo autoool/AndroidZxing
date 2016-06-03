@@ -3,6 +3,7 @@
 buildscript {
 
     ext.leakcanary_version = '1.4-beta2'
+    ext.jni_lib_path = 'src/main/jniLibs'
     
     repositories {
         jcenter()
