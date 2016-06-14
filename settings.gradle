@@ -1,5 +1,3 @@
 include ':app', 'zxing-android'
 include ':android'
-include ':xZbar'
-include ':xzbarapp'
 include ':zbarexample'

@@ -3,6 +3,7 @@
           package="com.techidea.androidzxing">
 
     <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <uses-feature android:name="android.hardware.camera"/>
     <uses-feature android:name="android.hardware.camera.autofocus"/>
@@ -20,6 +21,9 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
+                <!--  <category android:name="android.intent.category.HOME"/>
+                  <category android:name="android.intent.category.DEFAULT"/>
+                  <category android:name="android.intent.category.MONKEY"/>-->
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
@@ -27,6 +31,12 @@
             android:name=".ZxingActivity"
             android:theme="@style/AppTheme.Base"
             />
+
+        <receiver android:name=".BootBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
