@@ -44,18 +44,43 @@ import java.util.List;
 public final class ViewfinderView extends View {
 
     private static final int[] SCANNER_ALPHA = {0, 64, 128, 192, 255, 192, 128, 64};
+
     private static final long ANIMATION_DELAY = 10L;
     private static final int CURRENT_POINT_OPACITY = 0xFF;
+    /**
+     * 四个绿色边角对应的长度
+     */
+    private int ScreenRate;
+
+    /**
+     * 四个绿色边角对应的宽度
+     */
+    private static final int CORNER_WIDTH = 5;
+    /**
+     * 扫描框中的中间线的宽度
+     */
+    private static final int MIDDLE_LINE_WIDTH = 6;
+
+    /**
+     * 扫描框中的中间线的与扫描框左右的间隙
+     */
+    private static final int MIDDLE_LINE_PADDING = 5;
+    private final int SPEED_DISTANCE = 50;
+
+    /**
+     * 手机的屏幕密度
+     */
+    private static float density;
+
+
     private static final int MAX_RESULT_POINTS = 20;
     private static final int POINT_SIZE = 6;
 
-    private GradientDrawable mDrawable;
-    private Rect mRect;
     //中间滑动线最顶端位置
     private int slideTop;
     private int slideBottom;
     private int slideSpeed = 15;
-    private final int SPEED_DISTANCE = 5;
+
     private boolean isFirst = false;
 
     private CameraManager cameraManager;
@@ -73,6 +98,9 @@ public final class ViewfinderView extends View {
     // This constructor is used when the class is built from an XML resource.
     public ViewfinderView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        density = context.getResources().getDisplayMetrics().density;
+        //将像素转换成dp
+        ScreenRate = (int)(15 * density);
 
         // Initialize these once for performance rather than calling them every time in onDraw().
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -85,10 +113,6 @@ public final class ViewfinderView extends View {
         scannerAlpha = 0;
         possibleResultPoints = new ArrayList<>(5);
         lastPossibleResultPoints = null;
-
-        int[] colors = {lineColor, lineColor, lineColor};
-        mRect = new Rect();
-        mDrawable = new GradientDrawable(GradientDrawable.Orientation.BL_TR, colors);
     }
 
     public void setCameraManager(CameraManager cameraManager) {
@@ -182,8 +206,8 @@ public final class ViewfinderView extends View {
                 paint.setColor(resultPointColor);
                 synchronized (currentPossible) {
                     for (ResultPoint point : currentPossible) {
-                        canvas.drawCircle(frameLeft + (int) (point.getX() * scaleX),
-                                frameTop + (int) (point.getY() * scaleY),
+                        canvas.drawCircle(frameLeft + (int) (point.getX()),
+                                frameTop + (int) (point.getY()),
                                 POINT_SIZE, paint);
                     }
                 }
@@ -194,8 +218,8 @@ public final class ViewfinderView extends View {
                 synchronized (currentLast) {
                     float radius = POINT_SIZE / 2.0f;
                     for (ResultPoint point : currentLast) {
-                        canvas.drawCircle(frameLeft + (int) (point.getX() * scaleX),
-                                frameTop + (int) (point.getY() * scaleY),
+                        canvas.drawCircle(frameLeft + (int) (point.getX()),
+                                frameTop + (int) (point.getY()),
                                 radius, paint);
                     }
                 }

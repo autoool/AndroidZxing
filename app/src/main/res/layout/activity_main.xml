@@ -16,4 +16,11 @@
         android:layout_height="48dp"
         android:text="zxing"/>
 
+    <Button
+        android:id="@+id/button_launch"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_below="@id/button_zxing"
+        android:text="launch"/>
+
 </RelativeLayout>
