@@ -26,6 +26,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
@@ -43,8 +44,8 @@ import java.util.List;
 public final class ViewfinderView extends View {
 
     private static final int[] SCANNER_ALPHA = {0, 64, 128, 192, 255, 192, 128, 64};
-    private static final long ANIMATION_DELAY = 80L;
-    private static final int CURRENT_POINT_OPACITY = 0xA0;
+    private static final long ANIMATION_DELAY = 10L;
+    private static final int CURRENT_POINT_OPACITY = 0xFF;
     private static final int MAX_RESULT_POINTS = 20;
     private static final int POINT_SIZE = 6;
 
@@ -52,7 +53,10 @@ public final class ViewfinderView extends View {
     private Rect mRect;
     //中间滑动线最顶端位置
     private int slideTop;
+    private int slideBottom;
     private int slideSpeed = 15;
+    private final int SPEED_DISTANCE = 5;
+    private boolean isFirst = false;
 
     private CameraManager cameraManager;
     private final Paint paint;
@@ -82,7 +86,7 @@ public final class ViewfinderView extends View {
         possibleResultPoints = new ArrayList<>(5);
         lastPossibleResultPoints = null;
 
-        int[] colors = {lineColor,lineColor,lineColor};
+        int[] colors = {lineColor, lineColor, lineColor};
         mRect = new Rect();
         mDrawable = new GradientDrawable(GradientDrawable.Orientation.BL_TR, colors);
     }
@@ -102,6 +106,11 @@ public final class ViewfinderView extends View {
         if (frame == null || previewFrame == null) {
             return;
         }
+        if (!isFirst) {
+            isFirst = true;
+            slideTop = frame.top;
+            slideBottom = frame.bottom;
+        }
         int width = canvas.getWidth();
         int height = canvas.getHeight();
 
@@ -112,29 +121,29 @@ public final class ViewfinderView extends View {
         canvas.drawRect(frame.right + 1, frame.top, width, frame.bottom + 1, paint);
         canvas.drawRect(0, frame.bottom + 1, width, height, paint);
 
-        //画出四个角
-        paint.setColor(cornorColor);
-        //左上角
-        canvas.drawRect(frame.left, frame.top, frame.left + 20, frame.top + 5, paint);
-        canvas.drawRect(frame.left, frame.top, frame.left + 5, frame.top + 20, paint);
-
-        //右上角
-        canvas.drawRect(frame.right - 20, frame.top, frame.right, frame.top + 5, paint);
-        canvas.drawRect(frame.right - 5, frame.top, frame.right, frame.top + 20, paint);
-
-        //左下角
-        canvas.drawRect(frame.left, frame.bottom - 5, frame.left + 20, frame.bottom, paint);
-        canvas.drawRect(frame.left, frame.bottom - 20, frame.left + 5, frame.bottom, paint);
-
-        //右下角
-        canvas.drawRect(frame.right - 20, frame.bottom - 5, frame.right, frame.bottom, paint);
-        canvas.drawRect(frame.right - 5, frame.bottom - 20, frame.right, frame.bottom, paint);
 
         if (resultBitmap != null) {
             // Draw the opaque result bitmap over the scanning rectangle
             paint.setAlpha(CURRENT_POINT_OPACITY);
-            canvas.drawBitmap(resultBitmap, null, frame, paint);
+            canvas.drawBitmap(resultBitmap, frame.left, frame.top, paint);
         } else {
+            //画出四个角
+            paint.setColor(cornorColor);
+            //左上角
+            canvas.drawRect(frame.left, frame.top, frame.left + 20, frame.top + 5, paint);
+            canvas.drawRect(frame.left, frame.top, frame.left + 5, frame.top + 20, paint);
+
+            //右上角
+            canvas.drawRect(frame.right - 20, frame.top, frame.right, frame.top + 5, paint);
+            canvas.drawRect(frame.right - 5, frame.top, frame.right, frame.top + 20, paint);
+
+            //左下角
+            canvas.drawRect(frame.left, frame.bottom - 5, frame.left + 20, frame.bottom, paint);
+            canvas.drawRect(frame.left, frame.bottom - 20, frame.left + 5, frame.bottom, paint);
+
+            //右下角
+            canvas.drawRect(frame.right - 20, frame.bottom - 5, frame.right, frame.bottom, paint);
+            canvas.drawRect(frame.right - 5, frame.bottom - 20, frame.right, frame.bottom, paint);
 
             // Draw a red "laser scanner" line through the middle to show decoding is active
             paint.setColor(cornorColor);
@@ -142,18 +151,20 @@ public final class ViewfinderView extends View {
             scannerAlpha = (scannerAlpha + 1) % SCANNER_ALPHA.length;
 //            int middle = frame.height() / 2 + frame.top;
 //            canvas.drawRect(frame.left + 2, middle - 1, frame.right - 1, middle + 2, paint);
-            int i = 0;
-            if ((slideTop += slideSpeed) < (frame.bottom - frame.top)) {
-                mDrawable.setShape(GradientDrawable.RECTANGLE);
-                mDrawable.setCornerRadii(new float[]{8, 8, 8, 8, 8, 8, 8, 8});
-                mRect.set(frame.left + 10, frame.top + slideTop, frame.right - 10,
-                        frame.top + 1 + i);
-                mDrawable.setBounds(mRect);
-                mDrawable.draw(canvas);
 
-            } else {
-                slideTop = 0;
+            slideTop += SPEED_DISTANCE;
+            if (slideTop >= frame.bottom) {
+                slideTop = frame.top;
             }
+            Rect lineRect = new Rect();
+            lineRect.left = frame.left;
+            lineRect.right = frame.right;
+            lineRect.top = slideTop;
+            lineRect.bottom = slideTop + 18;
+            canvas.drawBitmap(((BitmapDrawable) (getResources()
+                            .getDrawable(R.drawable.qr_scan_line))).getBitmap(), null,
+                    lineRect, paint);
+//            canvas.drawRect(frame.left + 2, slideTop - 2, frame.right - 2, slideTop + 2, paint);
 
             float scaleX = frame.width() / (float) previewFrame.width();
             float scaleY = frame.height() / (float) previewFrame.height();
@@ -193,10 +204,10 @@ public final class ViewfinderView extends View {
             // Request another update at the animation interval, but only repaint the laser line,
             // not the entire viewfinder mask.
             postInvalidateDelayed(ANIMATION_DELAY,
-                    frame.left - POINT_SIZE,
-                    frame.top - POINT_SIZE,
-                    frame.right + POINT_SIZE,
-                    frame.bottom + POINT_SIZE);
+                    frame.left,
+                    frame.top,
+                    frame.right,
+                    frame.bottom);
         }
     }
 
