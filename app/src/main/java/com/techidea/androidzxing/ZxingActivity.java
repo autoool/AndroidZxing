@@ -20,4 +20,6 @@ public class ZxingActivity extends AppCompatActivity {
         FragmentManager fm = getSupportFragmentManager();
         mCaptureFragment = (CaptureFragment) fm.findFragmentById(R.id.fragment_scan);
     }
+
+
 }

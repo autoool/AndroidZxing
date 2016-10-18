@@ -409,7 +409,7 @@ public class CaptureFragment extends Fragment implements SurfaceHolder.Callback 
         if (surfaceHolder == null) {
             throw new IllegalStateException("No SurfaceHolder provided");
         }
-        cameraManager.setManualCameraId(0);
+        cameraManager.setManualCameraId(1);
         if (cameraManager.isOpen()) {
             Log.w(TAG, "initCamera() while already open -- late SurfaceView callback?");
             return;
