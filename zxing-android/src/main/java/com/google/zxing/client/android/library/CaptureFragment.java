@@ -25,7 +25,8 @@ import com.google.zxing.client.android.AmbientLightManager;
 import com.google.zxing.client.android.BeepManager;
 import com.google.zxing.client.android.FinishListener;
 import com.google.zxing.client.android.InactivityTimer;
-import com.google.zxing.client.android.PreferencesActivity;
+
+import com.google.zxing.client.android.PreferencesContast;
 import com.google.zxing.client.android.R;
 import com.google.zxing.client.android.ViewfinderView;
 import com.google.zxing.client.android.camera.CameraManager;
@@ -82,12 +83,7 @@ public class CaptureFragment extends Fragment implements SurfaceHolder.Callback 
         this.mCallBack = iResultCallback;
     }
 
-    private static final long DEFAULT_INTENT_RESULT_DURATION_MS = 1500L;
     private static final long BULK_MODE_SCAN_DELAY_MS = 1000L;
-
-    private static final String[] ZXING_URLS = {"http://zxing.appspot.com/scan", "zxing://scan/"};
-
-    public static final int HISTORY_REQUEST_CODE = 0x0000bacc;
 
     private static final Collection<ResultMetadataType> DISPLAYABLE_METADATA_TYPES =
             EnumSet.of(ResultMetadataType.ISSUE_NUMBER,
@@ -347,7 +343,7 @@ public class CaptureFragment extends Fragment implements SurfaceHolder.Callback 
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-        if (resultHandler.getDefaultButtonID() != null && prefs.getBoolean(PreferencesActivity.KEY_AUTO_OPEN_WEB, false)) {
+        if (resultHandler.getDefaultButtonID() != null && prefs.getBoolean(PreferencesContast.KEY_AUTO_OPEN_WEB, false)) {
             resultHandler.handleButtonPress(resultHandler.getDefaultButtonID());
             return;
         }
@@ -409,7 +405,7 @@ public class CaptureFragment extends Fragment implements SurfaceHolder.Callback 
         if (surfaceHolder == null) {
             throw new IllegalStateException("No SurfaceHolder provided");
         }
-        cameraManager.setManualCameraId(1);
+        cameraManager.setManualCameraId(-1);
         if (cameraManager.isOpen()) {
             Log.w(TAG, "initCamera() while already open -- late SurfaceView callback?");
             return;

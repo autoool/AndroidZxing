@@ -77,7 +77,7 @@ public final class CameraManager {
   public synchronized void openDriver(SurfaceHolder holder) throws IOException {
     OpenCamera theCamera = camera;
     if (theCamera == null) {
-      theCamera = OpenCameraInterface.open(1);
+      theCamera = OpenCameraInterface.open(requestedCameraId);
       if (theCamera == null) {
         throw new IOException("Camera.open() failed to return object from driver");
       }

@@ -169,29 +169,11 @@ public final class ViewfinderView extends View {
             canvas.drawRect(frame.right - 20, frame.bottom - 5, frame.right, frame.bottom, paint);
             canvas.drawRect(frame.right - 5, frame.bottom - 20, frame.right, frame.bottom, paint);
 
-            // Draw a red "laser scanner" line through the middle to show decoding is active
+            // Draw a  "laser scanner" line through the middle to show decoding is active
             paint.setColor(cornorColor);
-            paint.setAlpha(SCANNER_ALPHA[scannerAlpha]);
             scannerAlpha = (scannerAlpha + 1) % SCANNER_ALPHA.length;
-//            int middle = frame.height() / 2 + frame.top;
-//            canvas.drawRect(frame.left + 2, middle - 1, frame.right - 1, middle + 2, paint);
-
-            slideTop += SPEED_DISTANCE;
-            if (slideTop >= frame.bottom) {
-                slideTop = frame.top;
-            }
-            Rect lineRect = new Rect();
-            lineRect.left = frame.left;
-            lineRect.right = frame.right;
-            lineRect.top = slideTop;
-            lineRect.bottom = slideTop + 18;
-            canvas.drawBitmap(((BitmapDrawable) (getResources()
-                            .getDrawable(R.drawable.qr_scan_line))).getBitmap(), null,
-                    lineRect, paint);
-//            canvas.drawRect(frame.left + 2, slideTop - 2, frame.right - 2, slideTop + 2, paint);
-
-            float scaleX = frame.width() / (float) previewFrame.width();
-            float scaleY = frame.height() / (float) previewFrame.height();
+            int middle = frame.height() / 2 + frame.top;
+            canvas.drawRect(frame.left + 2, middle - 1, frame.right - 1, middle + 2, paint);
 
             List<ResultPoint> currentPossible = possibleResultPoints;
             List<ResultPoint> currentLast = lastPossibleResultPoints;
